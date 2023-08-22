@@ -23,6 +23,8 @@ App Switcher has three built-in GUI themes: Light mode, Dark mode, and System De
 
 To change themes, go to the system tray and right click on App Switcher's icon. From there, you can click on the "Appearance" submenu and select your theme of choice.
 
+Note that App Switcher only displays rounded corners in Windows 11.
+
 ![App Switcher in Dark Mode](https://github.com/Osmagtor/AppSwitcher/blob/main/Pasted%20image%2020230822165949.png)
 
 ![App Switcher in Light Mode](https://github.com/Osmagtor/AppSwitcher/blob/main/Pasted%20image%2020230822170042.png)
