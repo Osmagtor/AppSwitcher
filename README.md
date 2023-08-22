@@ -1,5 +1,6 @@
 # App Switcher
 An alternative to Window's built-in Task Switcher made entirely with AutoHotkey.
+
 ![App Switcher Icon](https://github.com/Osmagtor/AppSwitcher/blob/main/Icon.ico)
 
 ## How to Install
