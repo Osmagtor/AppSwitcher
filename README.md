@@ -11,7 +11,7 @@ An alternative to Window's built-in Task Switcher made entirely with AutoHotkey.
 | **Alt + Shift + Tab**                                                              | Switch between open apps from right to left                                                                                                                                                                                                       |
 
 ## Themes
-App Switcher has three built-in GUI themes: Light mode, Dark mode, and System Default, which changes between the Light and Dark modes based on Windows' theme. The selection outlines that surround the icons and the preview windows are coloured based on Windows' palette of theme colours. A lighter colour is selected for dark mode and a darker one for light mode.
+App Switcher has three built-in GUI themes: Light mode, Dark mode, and System Default. System Default changes between the Light and Dark modes based on Windows' theme. The selection outlines that surround the icons and the preview windows are coloured based on Windows' palette of theme colours. A lighter colour is selected for dark mode and a darker one for light mode.
 
 ![App Switcher in Dark Mode](https://github.com/Osmagtor/AppSwitcher/blob/main/Pasted%20image%2020230822165949.png)
 
