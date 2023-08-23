@@ -16,7 +16,8 @@ To uninstall App Switcher, go to the system tray and right click on App Switcher
 | **Alt + Tab**                                                                      | Switches between open apps from left to right                                                                                                                                                                               |
 | **Alt + Tilde** (the key above the tab key) | (1) If the main window is not open, switches between windows of the same app; (2) If the main window is open, opens the window containing the previews of all the open windows of the same app    |
 | **Alt + Esc**                                                                      | (1) If the window with all the previews is not open, closes all the windows of the selected app; (2) If the window with all the previews is open, closes the selected window of the selected app |
-| **Alt + Shift + Tab**                                                              | Switches between open apps from right to left                                                                                                                                                                                                       |
+| **Alt + Shift + Tab**                                                              | Switches between open apps from right to left |
+| **Alt + Shift + Tilde** (the key above the tab key)                                | Switches between window previews from right to left |
 
 ## Themes
 App Switcher has three built-in GUI themes: Light mode, Dark mode, and System Default. System Default changes between the Light and Dark modes based on Windows' theme. The selection outlines that surround the icons and the preview windows are coloured based on Windows' palette of theme colours. A lighter colour is selected for dark mode and a darker one for light mode.
