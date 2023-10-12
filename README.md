@@ -28,9 +28,9 @@ To change themes, go to the system tray and right click on App Switcher's icon. 
 
 Note that App Switcher only displays rounded corners in Windows 11.
 
-![App Switcher in Dark Mode](https://github.com/Osmagtor/AppSwitcher/blob/main/Pasted%20image%2020230822165949.png)
+![App Switcher in Dark Mode](https://github.com/Osmagtor/AppSwitcher/blob/main/Pasted%20image%2020230822165949%20-%20Dark.png)
 
-![App Switcher in Light Mode](https://github.com/Osmagtor/AppSwitcher/blob/main/Pasted%20image%2020230822170042.png)
+![App Switcher in Light Mode](https://github.com/Osmagtor/AppSwitcher/blob/main/Pasted%20image%2020230822165949%20-%20Light.png)
 
 ## Known limitations
 - In its current form, App Switcher can only load the icons of UWP apps when at least one window of a UWP app is not minimized. Otherwise, the UI defaults to a generic Windows icon. All icons are retrieved directly from the ".exe" file of each program. However, all UWP apps are displayed through the same icon-less "ApplicationFrameHost" file. The only workaround I have successfully been able to implement involves retrieving the true process path of a UWP app from the "Windows.UI.Core.CoreWindow1" control that makes up the title bar of any UWP app. From there, the string containing the process path is parsed to find the app's manifest, which is loop read to find the path to the app's icon. Unfortunately, the "Windows.UI.Core.CoreWindow1" controls in UWP apps that allow for this are completely inaccessible when the window is minimized. A band-aid solution was implemented in version [7.0.3](https://github.com/Osmagtor/AppSwitcher/releases/tag/v7.0.3)
