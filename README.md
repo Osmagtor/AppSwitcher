@@ -1,5 +1,5 @@
 # App Switcher
-An alternative to Windows' built-in Task Switcher made entirely with AutoHotkey.
+A macOS-like alternative to Windows' built-in Task Switcher made entirely with AutoHotkey.
 
 ![App Switcher Icon](https://github.com/Osmagtor/AppSwitcher/blob/main/Icon.ico)
 
