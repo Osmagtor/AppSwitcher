@@ -4,7 +4,7 @@ A macOS-like alternative to Windows' built-in task switcher made entirely with A
 ![App Switcher Icon](https://github.com/Osmagtor/AppSwitcher/blob/main/Icon.ico)
 
 ## How to Install
-Download "App Switcher.exe", double-click it and that's it! Next time you boot up into Windows you should be able to delete the "App Switcher.exe" file that you downloaded. App Switcher automatically creates a folder called "App Switcher" in "C:\Users\Your Username\Documents\" where the main executable is stored along with some other necessary files. A shortcut to the main executable file is also automatically created in the Startup folder so App Switcher is ready every time you start your computer.
+Download the "App Switcher.exe" executable from the latest release, double-click it and that's it! Next time you boot up into Windows you should be able to delete the "App Switcher.exe" file that you downloaded. App Switcher automatically creates a folder called "App Switcher" in "C:\Users\Your Username\Documents\" where the main executable is stored along with some other necessary files. A shortcut to the main executable file is also automatically created in the Startup folder so App Switcher is ready every time you start your computer.
 
 ## How to Uninstall
 To uninstall App Switcher, go to the system tray and right click on App Switcher's icon. Then click on "Uninstall". A pop-up window will appear to ask for confirmation. Once App Switcher is uninstalled, please check "C:\Users\Your Username\Documents\" for residual files.
