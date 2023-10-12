@@ -1,5 +1,5 @@
 # App Switcher
-A macOS-like alternative to Windows' built-in Task Switcher made entirely with AutoHotkey.
+A macOS-like alternative to Windows' built-in task switcher made entirely with AutoHotkey. It shows icons rather than window previews and it only shows one icon per app irrespective of the number of open windows of each app. Nevertheless, when more than one window of the same app is open, a badge indicating the number of open windows of said app is displayed. If an app has a badge next to it, then you can also get a list of previews like the ones displayed by Windows' default task switcher to hand-pick which window to open. Productivity galore!
 
 ![App Switcher Icon](https://github.com/Osmagtor/AppSwitcher/blob/main/Icon.ico)
 
