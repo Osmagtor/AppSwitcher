@@ -40,7 +40,7 @@ Note that App Switcher only displays rounded corners in Windows 11.
 - Some programs encompass multiple .exe files with the same icon. The main window in [VirtualBox](https://www.virtualbox.org/), for instance, runs off one ".exe" file while the virtual boxes themselves run off a separate ".exe" file with a separate corresponding process ID. As a result, App Switcher considers each window to belong to a different program.
 
 
-## Sources of used/adapted code
+## Sources of inspiration and of used/adapted code
 - https://www.autohotkey.com/boards/viewtopic.php?t=4334
 - https://www.autohotkey.com/board/topic/95768-switch-between-windows-of-the-same-application/
 - https://www.autohotkey.com/boards/viewtopic.php?t=1129063
