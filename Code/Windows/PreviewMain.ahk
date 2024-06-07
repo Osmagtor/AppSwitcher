@@ -21,7 +21,7 @@ class PreviewsMain {
      */
     __New(main, window, TaskbarLeft, TaskbarRight, position := "") {
         if (main AND window.windowSubWindows.length > 1) {
-            this.h := this.windowHeight + (main.windowsArray[1].icon.padding * 2)
+            this.h := this.windowHeight + (Icon.padding * 2)
             this.gui := Gui("+AlwaysOnTop -Caption +toolwindow -Border +Owner" main.gui.hwnd, this.title)
 
             try {
@@ -48,9 +48,9 @@ class PreviewsMain {
      * @param TaskbarRight The width of the taskbar if it is located vertically on the right
      * @param hmain The height of the object of the "main" class
      */
-    localDraw(window, TaskbarLeft, TaskbarRight, hmain) {
+    localDraw(win, TaskbarLeft, TaskbarRight, hmain) {
         try {
-            If (window.windowSubWindows.length > 1) {
+            If (win.windowSubWindows.length > 1) {
                 while (this.w > (A_ScreenWidth - TaskbarLeft - TaskbarRight - 100) || this.w = 0) {
                     ; If the final width of all the previews is too large, then we go to "FinalwTooBig" and try again with a smaller "PreviewWindowHeight"
 
@@ -62,8 +62,8 @@ class PreviewsMain {
                             this.windowHeight + 60
                     this.w := 0
 
-                    for i in window.windowSubWindows {
-                        this.w += (Preview.calculatePreviewWidth(i.w, i.h, this.windowHeight) + window.icon.padding) ; Some simple Cross-multiplication
+                    for i in win.windowSubWindows {
+                        this.w += (Preview.calculatePreviewWidth(i.w, i.h, this.windowHeight) + Icon.padding) ; Some simple Cross-multiplication
                     }
                 }
 
@@ -74,7 +74,7 @@ class PreviewsMain {
 
                 ; Creating the main preview window
 
-                EnableShadow(this.gui.hwnd)
+                Window.EnableShadow(this.gui.hwnd)
 
                 this.gui.Show("x" this.x " y" this.y " w" this.w " h" this.h " Hide")
                 AnimateWindow(this.gui.hwnd, 50, "0xa0000")
@@ -96,7 +96,7 @@ class PreviewsMain {
                     Preview(
                         A_Index = 1 ?
                             this.x + 15 :
-                            this.previewsArray[A_Index - 1].x + this.previewsArray[A_Index - 1].w + subWindows[1].icon.padding,
+                            this.previewsArray[A_Index - 1].x + this.previewsArray[A_Index - 1].w + Icon.padding,
                         this.y + 15,
                         Preview.calculatePreviewWidth(
                             subWindows[A_Index].w,
@@ -114,21 +114,13 @@ class PreviewsMain {
                 this.gui.Add(
                     "Text",
                     "x" this.previewsArray[A_Index].x - this.x
-                    " y" this.h - subWindows[1].icon.padding
+                    " y" this.h - Icon.padding
                     " w" this.previewsArray[A_Index].w
                     " h17",
                     subWindows[A_Index].windowTitle
                 )
-            } catch {
-                MsgBox(
-                    "this.x: " . this.x .
-                    "`nthis.previewsArray[A_Index-1]: " . this.previewsArray[A_Index-1] .
-                    "`nsubWindows[A_Index].w: " . subWindows[A_Index].w .
-                    "`nnsubWindows[A_Index].h: " . subWindows[A_Index].h .
-                    "`nthis.windowHeight: " . this.windowHeight
-                    "`nhwnd: " . hwnd .
-                    "`nsubWindows[A_Index].windowID: " . subWindows[A_Index].windowID
-                )
+            } catch Error as err {
+                showErrorTooltip(err)
             }
         }
     }

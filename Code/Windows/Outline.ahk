@@ -123,7 +123,7 @@ class Outline {
             )
             this.window.badge.update(this.window)
 
-            EnableShadow(this.gui.Hwnd)
+            Window.EnableShadow(this.gui.Hwnd)
             AnimateWindow(this.gui.Hwnd, 100, "0xa0000")
             this.gui.Show("x" this.main.x + this.main.windowsArray[this.tabCounter].icon.x - 10 " y" this.main.y + 10 " w" this.window.icon.size + 20 " h" this.window.icon.size + 20)
         } catch Error as err {

@@ -75,9 +75,9 @@ class Main {
                 }
             }
 
-            EnableShadow(this.gui.hwnd)
+            Window.EnableShadow(this.gui.hwnd)
 
-            this.gui.Show("w" (((this.windowsArray[1].icon.padding + this.windowsArray[1].icon.size) * this.windowsArray.Length) - WindowsVersionVariables["MainOffset"]) + 20 " h" this.HMAIN " Hide") ;The "20" at the end adds 20 more pixels to the total width to make sure the last image is 20 pixels away from the window border
+            this.gui.Show("w" (((Icon.padding + this.windowsArray[1].icon.size) * this.windowsArray.Length) - WindowsVersionVariables["MainOffset"]) + 20 " h" this.HMAIN " Hide") ;The "20" at the end adds 20 more pixels to the total width to make sure the last image is 20 pixels away from the window border
             AnimateWindow(this.gui.hwnd, 50, "0xa0000")
 
             WinGetPos(&xPos, &yPos, , , "ahk_id" this.gui.Hwnd)

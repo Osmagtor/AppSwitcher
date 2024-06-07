@@ -47,6 +47,20 @@ class Window {
     }
 
     /**
+     * Method to render a drop shadow in the window of a given handle
+     * @param gHwnd 
+     */
+    static EnableShadow(gHwnd) {
+        _MARGINS := Buffer(16)
+        NumPut("UInt", 1, _MARGINS, 0)
+        NumPut("UInt", 1, _MARGINS, 4)
+        NumPut("UInt", 1, _MARGINS, 8)
+        NumPut("UInt", 1, _MARGINS, 12)
+        DllCall("dwmapi\DwmSetWindowAttribute", "Ptr", gHwnd, "UInt", 2, "Int*", 2, "UInt", 4)
+        DllCall("dwmapi\DwmExtendFrameIntoClientArea", "Ptr", gHwnd, "Ptr", _MARGINS)
+    }
+
+    /**
      * Internal method to get the width (i.e., "w") and the height (i.e., "h")
      */
     localGetDimensions() {
@@ -66,24 +80,17 @@ class Window {
             }
             else
             {
-                this.w := NumGet(wp, 36, "int") - NumGet(wp, 28, "int")
-                this.h := NumGet(wp, 40, "int") - NumGet(wp, 32, "int")
+                Width := NumGet(wp, 36, "int") - NumGet(wp, 28, "int")
+                Height := NumGet(wp, 40, "int") - NumGet(wp, 32, "int")
             }
         }
         Else
         {
             WinGetPos , , &Width, &Height, "ahk_id" this.windowID
-            this.w := Width
-            this.h := Height
         }
-    }
 
-    /**
-     * Method to find out if the window is on top of all other windows
-     * @returns {Number} Greater than 0 if it is
-     */
-    isOnTop() {
-        return WinGetExStyle("ahk_id" this.windowID) & 0x8 ; https://www.autohotkey.com/docs/v2/lib/WinGetStyle.htm
+        this.w := Width
+        this.h := Height
     }
 
     /**
@@ -99,7 +106,7 @@ class Window {
 
             SetTitleMatchMode("RegEx")
             global WindowsList := WinGetList("\w", ,) ;"\w" include anything that has a word (i.e., a title)
-            SetTitleMatchMode 3
+            SetTitleMatchMode(3)
 
             ; CREATING AN ARRAY OF "WINDOW" CLASS OBJECTS FROM THE ARRAY OF VALID WINDOWS (i.e., ValidWindowsList)
 
@@ -156,13 +163,21 @@ class Window {
     }
 
     /**
+     * Method to find out if the window is on top of all other windows
+     * @returns {Number} Greater than 0 if it is
+     */
+    isOnTop() {
+        return WinGetExStyle("ahk_id" this.windowID) & 0x8 ; https://www.autohotkey.com/docs/v2/lib/WinGetStyle.htm
+    }
+
+    /**
      * Private method that checks if a window is valid (i.e., a desktop app). It does so by contrasting against some window title and class values that are known not to belong to desktop apps
      * @param title The title of the window
      * @param class The class of the window
      * @returns {Boolean} "True" if the window is valid, "false" if not 
      */
     static localValidateWindow(title, class) {
-        return (title != "Start" AND class != "Button") AND (title != "Program Manager" AND class != "Progman") AND (title != "Setup" AND class != "TApplication") AND (class != "Windows.UI.Core.CoreWindow" AND title != "Search") AND (title != "PopupHost" AND class != "Xaml_WindowedPopupClass") AND (class != "tooltips_class32") AND (title != "Super AltTab.ahk" AND class != "AutoHotkeyGUI") AND (title != "Super Previews.ahk" AND class != "AutoHotkeyGUI")
+        return (title != "Start" AND class != "Button") AND (title != "Program Manager" AND class != "Progman") AND (title != "Setup" AND class != "TApplication") AND (class != "Windows.UI.Core.CoreWindow" AND title != "Search") AND (title != "PopupHost" AND class != "Xaml_WindowedPopupClass") AND (class != "tooltips_class32") AND (title != "Super AltTab.ahk" AND title != "Super Previews.ahk") AND (title != "Drag Placeholder Window")
     }
 
     /**

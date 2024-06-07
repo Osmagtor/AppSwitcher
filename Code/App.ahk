@@ -43,7 +43,6 @@ isPreviewsWindowOpen := false
 
 StartupComplete := true
 
-
 try {
     #HotIf StartupComplete
     !Tab:: {
@@ -119,7 +118,7 @@ try {
         }
     }
 
-    #HotIf (WinExist("Super AltTab.ahk") AND MainWindow.windowsArray.Length > 0) AND StartupComplete
+    #HotIf (MainWindow AND MainWindow.windowsArray.Length > 0) AND StartupComplete
     Alt Up::
     {
         global MainWindow
@@ -174,10 +173,10 @@ try {
                 }
 
                 MainWindow.__Delete()
-                
+
                 try {
                     MainWindow := Main(tempTabCounter)
-                } catch NoWindowsError{
+                } catch NoWindowsError {
                     MainWindow := ""
                 }
             }
@@ -191,17 +190,16 @@ try {
                 WinClose("ahk_id" PreviewsWindow.outline.getWindow().windowID)
 
                 MainWindow.__Delete()
-                PreviewsWindow.__Delete()
 
                 try {
                     MainWindow := Main(tempTabCounter)
-                } catch NoWindowsError{
+                } catch NoWindowsError {
                     MainWindow := ""
                 }
 
                 try {
                     PreviewsWindow := PreviewsMain(MainWindow, MainWindow.outline.window, TaskbarLeft, TaskbarRight, tempPreviewCounter)
-                } catch NoWindowsError{
+                } catch NoWindowsError {
                     PreviewsWindow := ""
                 }
 
@@ -211,10 +209,6 @@ try {
             If MainWindow {
                 MainWindow.__Delete()
                 MainWindow := ""
-            }
-
-            If PreviewsWindow {
-                PreviewsWindow.__Delete()
                 PreviewsWindow := ""
             }
         }

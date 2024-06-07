@@ -61,7 +61,7 @@ class PreviewOutline {
                 WinMove(this.x, this.y, this.w, this.h, "ahk_id " this.gui.hwnd)
             } else {
                 this.localGetPosData()
-                EnableShadow(this.gui.Hwnd)
+                Window.EnableShadow(this.gui.Hwnd)
                 this.gui.Show("x" this.x " y" this.y " w" this.w " h" this.h)
                 WinActivate("Super AltTab.ahk")
             }

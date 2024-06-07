@@ -39,7 +39,7 @@ class Preview {
         this.gui := Gui("-Caption +ToolWindow +AlwaysOnTop +Owner" hwnd, "Preview" PreviewCounter)
         this.gui.Show("x" this.x " y" this.y " w" this.w " h" this.h)
 
-        EnableShadow(this.gui.Hwnd)
+        Window.EnableShadow(this.gui.Hwnd)
 
         DllCall("LoadLibrary", "Str", "Dwmapi.dll", "Ptr")
 
@@ -102,7 +102,7 @@ class Preview {
             monitorNumber.Add("Text", "x14 y9 cffffff", (MonitorGetCount() + 1) - Window.WinGetMonitorIndex(this.windowID))
             monitorNumber.BackColor := "000000"
 
-            EnableShadow(monitorNumber.hwnd)
+            Window.EnableShadow(monitorNumber.hwnd)
             monitorNumber.Show("x" x + w - 30 "y" y + h - 30 "w35 h35")
         } catch Error as err {
             showErrorTooltip(err)

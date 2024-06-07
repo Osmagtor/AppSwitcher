@@ -4,20 +4,6 @@
 global MainWindow
 
 /**
- * Method to render a drop shadow in the window of a given handle
- * @param gHwnd 
- */
-EnableShadow(gHwnd) {
-    _MARGINS := Buffer(16)
-    NumPut("UInt", 1, _MARGINS, 0)
-    NumPut("UInt", 1, _MARGINS, 4)
-    NumPut("UInt", 1, _MARGINS, 8)
-    NumPut("UInt", 1, _MARGINS, 12)
-    DllCall("dwmapi\DwmSetWindowAttribute", "Ptr", gHwnd, "UInt", 2, "Int*", 2, "UInt", 4)
-    DllCall("dwmapi\DwmExtendFrameIntoClientArea", "Ptr", gHwnd, "Ptr", _MARGINS)
-}
-
-/**
  * Method to render a fade-in animation for the window of a given handle
  * @param hWnd 
  * @param Duration 
@@ -84,7 +70,7 @@ checkUpdates() {
 
     ; The links in the array below are changed whenever a new version is released. They contain different version numbers based on the next possible version numbers
 
-    websites := ['https://github.com/Osmagtor/AppSwitcher/releases/tag/v7.1.1', 'https://github.com/Osmagtor/AppSwitcher/releases/tag/v7.2', 'https://github.com/Osmagtor/AppSwitcher/releases/tag/v8']
+    websites := ['https://github.com/Osmagtor/AppSwitcher/releases/tag/v7.1.3', 'https://github.com/Osmagtor/AppSwitcher/releases/tag/v7.2', 'https://github.com/Osmagtor/AppSwitcher/releases/tag/v8']
 
     ; Then we download each of the websites from the links in the "websites" array above and "loop read" through them to find out if they really exist. If the text "404 "This is not the web page you are looking for"" is found, then there is no update yet on that website. So, we break out of both loops using a simple "goto" and delete all .html files. If it the text is not found, the innermost loop will end normally and "updateAvailable" will change to true, triggering the conditional structure further below
 
@@ -132,6 +118,7 @@ out:
  * Method to prepare the app's menus in the tray icon
  */
 initializeMenus() {
+    A_TrayMenu.Add("Reload", Restart)
     A_TrayMenu.Add() ; separator
     A_TrayMenu.Add("Uninstall", Uninstall)
     A_TrayMenu.Add() ; separator
@@ -280,11 +267,16 @@ initializeMenus() {
     About(*)
     {
         AboutGui := Gui("+ToolWindow", "About",)
-        AboutGui.Add("Text", "x30 y10", "Version 7.1")
+        AboutGui.Add("Text", "x30 y10", "Version 7.1.2")
         AboutGui.Add("Text", "x10 y+m", "Óscar Maganto Torres")
         AboutGui.Add("Button", "x36 y+m", "Github").OnEvent("Click", OpenGithub)
         AboutGui.Show()
         Return
+    }
+
+    Restart(*)
+    {
+        Reload()
     }
 
     OpenGithub(*)
@@ -368,22 +360,15 @@ FocusLost(wParam, lParam, msg, hwnd) {
     global PreviewsWindow
 
     try {
-        if ((WinExist("Super AltTab.ahk") AND (WinGetClass("A") != "AutoHotkeyGUI") AND (isPreviewsWindowOpen = false)))
+        if ((wParam = 6) OR (wParam = 32772))
         {
-            if ((wParam = 6) OR (wParam = 32772))
-            {
-                if (WinExist("Super AltTab.ahk")) {
+            if (WinGetProcessPath("ahk_id" lParam) != A_ScriptFullPath) {
+                if (MainWindow) {
                     MainWindow.__Delete()
                     MainWindow := ""
-
-                    if (WinExist("Super Previews.ahk")) {
-                        PreviewsWindow.__Delete()
-                        PreviewsWindow := ""
-                    }
+                    PreviewsWindow := ""
                 }
             }
         }
-    } catch Error as err {
-        showErrorTooltip(err)
     }
 }

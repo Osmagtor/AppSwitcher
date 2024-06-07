@@ -6,13 +6,13 @@ class Icon {
     ; It is used for windows whose icon filepath causes issues
     fallbackIconPath := A_WinDir "\system32\SHELL32.dll"
     size := ThemeValueVariables["IconSize"]
-    padding := 30
+    static padding := 30
     ctrl := "" ; The AHK control object of the "Gui" class
     parameters := ""
     filepath := 0
     x := ""
     y := ""
-    uwpIconSizes := Array(96, 80, 72, 64, 60, 48)
+    static uwpIconSizes := Array(96, 80, 72, 64, 60, 48)
 
     /**
      * Constructor
@@ -27,7 +27,7 @@ class Icon {
 
         this.parameters := position = 1 ?
             "x21 y20 h" . this.size . " w" . this.size . " BackgroundTrans"
-                : "x+m xp" . this.size + this.padding . " y20 h" . this.size . " w" . this.size . " BackgroundTrans"
+                : "x+m xp" . this.size + Icon.padding . " y20 h" . this.size . " w" . this.size . " BackgroundTrans"
     }
 
     /**
@@ -55,12 +55,10 @@ class Icon {
      */
     localGetUWPIcon(title, id) {
         try {
-            ;MsgBox(title . " 1")
-            ParsedWindowTitle := SubStr(title, InStr(title, "-", false, -1) + 1)
-            b := IniRead("settings.ini", "uwp icon paths", ParsedWindowTitle, False)
+            b := ""
             iconSize := 0
 
-            for ArrayIndex in this.uwpIconSizes
+            for ArrayIndex in Icon.uwpIconSizes
             {
                 if (ArrayIndex <= ThemeValueVariables["IconSize"])
                 {
@@ -69,10 +67,17 @@ class Icon {
                 }
             }
 
-            If (b AND FileExist("settings.ini"))
+            if (FileExist("settings.ini")) {
+                ParsedWindowTitle := SubStr(title, InStr(title, "-", false, -1) + 1)
+
+                b := IniRead("settings.ini", "uwp icon paths", ParsedWindowTitle, False)
+                b := StrReplace(b, "XXXX", iconsize)
+                b := FileExist(b) ? b : ""
+            }
+
+            If (b)
             {
-                ;MsgBox(title . " 2")
-                return StrReplace(b, "XXXX", iconsize)
+                return b
             }
             else
             {
@@ -142,7 +147,7 @@ class Icon {
      */
     toString() {
         return "size: " . this.size . "`n"
-            . "padding: " . this.padding . "`n"
+            . "padding: " . Icon.padding . "`n"
             . "control: " . this.ctrl.hwnd . "`n"
             . "parameters: " . this.parameters . "`n"
             . "filepath: " . this.filepath . "`n"
