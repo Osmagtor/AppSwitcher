@@ -53,12 +53,10 @@ startupChecks() {
     If (SubStr(A_OSVersion, 6) < 20000) ; Windows 10
     {
         WindowsVersionVariables["Gap"] := 0
-        WindowsVersionVariables["MainOffset"] := 10
     }
     Else ; Windows 11
     {
         WindowsVersionVariables["Gap"] := 15
-        WindowsVersionVariables["MainOffset"] := 8
     }
 }
 
@@ -70,7 +68,7 @@ checkUpdates() {
 
     ; The links in the array below are changed whenever a new version is released. They contain different version numbers based on the next possible version numbers
 
-    websites := ['https://github.com/Osmagtor/AppSwitcher/releases/tag/v7.1.4', 'https://github.com/Osmagtor/AppSwitcher/releases/tag/v7.2', 'https://github.com/Osmagtor/AppSwitcher/releases/tag/v8']
+    websites := ['https://github.com/Osmagtor/AppSwitcher/releases/tag/v7.1.5', 'https://github.com/Osmagtor/AppSwitcher/releases/tag/v7.2', 'https://github.com/Osmagtor/AppSwitcher/releases/tag/v8']
 
     ; Then we download each of the websites from the links in the "websites" array above and "loop read" through them to find out if they really exist. If the text "404 "This is not the web page you are looking for"" is found, then there is no update yet on that website. So, we break out of both loops using a simple "goto" and delete all .html files. If it the text is not found, the innermost loop will end normally and "updateAvailable" will change to true, triggering the conditional structure further below
 
@@ -267,7 +265,7 @@ initializeMenus() {
     About(*)
     {
         AboutGui := Gui("+ToolWindow", "About",)
-        AboutGui.Add("Text", "x30 y10", "Version 7.1.3")
+        AboutGui.Add("Text", "x30 y10", "Version 7.1.4")
         AboutGui.Add("Text", "x10 y+m", "Óscar Maganto Torres")
         AboutGui.Add("Button", "x36 y+m", "Github").OnEvent("Click", OpenGithub)
         AboutGui.Show()

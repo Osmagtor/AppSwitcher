@@ -6,7 +6,7 @@ class Icon {
     ; It is used for windows whose icon filepath causes issues
     fallbackIconPath := A_WinDir "\system32\SHELL32.dll"
     size := ThemeValueVariables["IconSize"]
-    static padding := 30
+    static padding := 20
     ctrl := "" ; The AHK control object of the "Gui" class
     parameters := ""
     filepath := 0
@@ -23,11 +23,21 @@ class Icon {
      * @param position The position of the window in the "Main" object
      */
     __New(title, id, class, uwp, position) {
-        this.filepath := uwp OR InStr(WinGetProcessPath("ahk_id" id), "C:\Program Files\WindowsApps\") ? this.localGetUWPIcon(title, id) : WinGetProcessPath("ahk_id" id)
+        this.filepath := uwp OR InStr(WinGetProcessPath("ahk_id" id), "C:\Program Files\WindowsApps\") ?
+            this.localGetUWPIcon(title, id) :
+                WinGetProcessPath("ahk_id" id)
 
         this.parameters := position = 1 ?
-            "x21 y20 h" . this.size . " w" . this.size . " BackgroundTrans"
-                : "x+m xp" . this.size + Icon.padding . " y20 h" . this.size . " w" . this.size . " BackgroundTrans"
+            "x" . Icon.padding . 
+            " y" . Icon.padding . 
+            " h" . this.size . 
+            " w" . this.size . 
+            " BackgroundTrans"
+                : "x+m xp" . this.size + Icon.padding . 
+                " y" . Icon.padding . 
+                " h" . this.size . 
+                " w" . this.size . 
+                " BackgroundTrans"
     }
 
     /**

@@ -1,15 +1,17 @@
 #Requires AutoHotkey v2.0
 
 class PreviewsMain {
-    windowHeight := 242
+    h := 300
     x := ""
     w := 0
-    h := ""
+    static padding := 15
+    static textH := 17
     gui := "" ; An object of the AHK "gui" class
     title := "Super Previews.ahk"
     previewsArray := []
     outline := "" ; An object of the "PreviewOutline" class
-    main := "" ; An object of the "Main" class
+    main := "" ; The object of the "Main" class that is the owner of an object of this class
+
 
     /**
      * Constructor
@@ -23,7 +25,6 @@ class PreviewsMain {
     __New(main, window, TaskbarLeft, TaskbarRight, position := "") {
         if (main AND window.windowSubWindows.length > 1) {
             this.main := main
-            this.h := this.windowHeight + (Icon.padding * 2)
             this.gui := Gui("+AlwaysOnTop -Caption +toolwindow -Border +Owner" main.gui.hwnd, this.title)
 
             try {
@@ -31,19 +32,11 @@ class PreviewsMain {
                 this.gui.SetFont("s10 q5 c" ThemeValueVariables["TextColor"], "Segoe UI")
             }
 
-            this.localDraw(window, TaskbarLeft, TaskbarRight, main.HMAIN)
+            this.localDraw(window, TaskbarLeft, TaskbarRight, main.h)
             this.outline := PreviewOutline(this, main.outline.window.windowSubWindows, position)
-
-            ; Unhiding the Previews Main window, the Previews Outline Window and all the Preview Windows
-
-            for index in this.previewsArray {
-                GroupAdd("Previews", "ahk_id" index.gui.hwnd)
-                GroupAdd("Previews", "ahk_id" index.monitorNumber.hwnd)
-            }
 
             AnimateWindow(this.gui.hwnd, 50, "0xa0000")
             AnimateWindow(this.outline.gui.hwnd, 50, "0xa0000")
-            WinShow("ahk_group Previews")
         } else {
             throw NoWindowsError()
         }
@@ -68,36 +61,47 @@ class PreviewsMain {
                 while (this.w > (A_ScreenWidth - TaskbarLeft - TaskbarRight - 100) || this.w = 0) {
                     ; If the final width of all the previews is too large, then we go to "FinalwTooBig" and try again with a smaller "PreviewWindowHeight"
 
-                    this.windowHeight := this.w = 0 ?
-                        this.windowHeight :
-                            (this.windowHeight * (A_ScreenWidth - TaskbarLeft - TaskbarRight - 100)) / this.w
                     this.h := this.w = 0 ?
                         this.h :
-                            this.windowHeight + 60
+                            (this.h * (A_ScreenWidth - TaskbarLeft - TaskbarRight - 100)) / this.w
                     this.w := 0
 
                     for i in win.windowSubWindows {
-                        this.w += (Preview.calculatePreviewWidth(i.w, i.h, this.windowHeight) + Icon.padding) ; Some simple Cross-multiplication
+                        this.w += (Preview.calculatePreviewWidth(i.w, i.h, this.h) + PreviewsMain.padding) ; Some simple Cross-multiplication
                     }
                 }
+
+                this.w += PreviewsMain.padding
 
                 ; Some calculations that do not require to be in the upcoming loop
 
                 this.x := ((A_ScreenWidth / 2) + (TaskbarRight / 2) + (TaskbarLeft / 2)) - (this.w / 2)
                 this.y := (A_ScreenHeight / 2) + (hmain / 2) + WindowsVersionVariables["Gap"]
 
+                ; Adding the    previews
+
+                this.createPreviews(
+                    this.main.outline.window.windowSubWindows,
+                    this.gui.Hwnd
+                )
+
                 ; Creating the main preview window
 
                 Window.EnableShadow(this.gui.hwnd)
 
-                this.gui.Show("x" this.x " y" this.y " w" this.w " h" this.h " Hide")
+                this.gui.Show(
+                    "x" this.x
+                    " y" this.y
+                    " w" this.w
+                    " h" this.h + PreviewsMain.padding * 4 + PreviewsMain.textH
+                    " Hide")
             }
         } catch Error as err {
             showErrorTooltip(err)
         }
     }
 
-    /**
+    /** + 1
      * Method to create all the previews located in the attribute "previewsArray"
      * @param subWindows An array of objects of the "Window" class
      * @param hwnd The handle of the owner window of the previews
@@ -108,28 +112,29 @@ class PreviewsMain {
                 this.previewsArray.Push(
                     Preview(
                         A_Index = 1 ?
-                            this.x + 15 :
-                            this.previewsArray[A_Index - 1].x + this.previewsArray[A_Index - 1].w + Icon.padding,
-                        this.y + 15,
+                            PreviewsMain.padding :
+                            this.previewsArray[A_Index - 1].x2 + PreviewsMain.padding,
+                        PreviewsMain.padding,
                         Preview.calculatePreviewWidth(
                             subWindows[A_Index].w,
                             subWindows[A_Index].h,
-                            this.windowHeight
+                            this.h
                         ),
-                        this.windowHeight,
-                        A_Index,
-                        hwnd,
-                        subWindows[A_Index].windowID
+                        this.h + PreviewsMain.padding * 2,
+                        subWindows[A_Index].windowID,
+                        this
                     )
                 )
 
+
                 ; Adding the text to the gui of this object
+                this.gui.SetFont("s10 q5 w2000", "Segoe UI")
                 this.gui.Add(
                     "Text",
-                    "x" this.previewsArray[A_Index].x - this.x
-                    " y" this.h - Icon.padding
+                    "x" this.previewsArray[A_Index].x1
+                    " y" this.h + PreviewsMain.padding * 3
                     " w" this.previewsArray[A_Index].w
-                    " h17",
+                    " h" PreviewsMain.textH,
                     subWindows[A_Index].windowTitle
                 )
             } catch Error as err {

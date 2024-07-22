@@ -2,11 +2,12 @@
 #SingleInstance Force
 
 class Main {
-    HMAIN := ThemeValueVariables["IconSize"] + 40
     title := "Super AltTab.ahk"
     gui := "" ; An object of the AHK "Gui" class
     x := ""
     y := ""
+    w := ""
+    h := ThemeValueVariables["IconSize"] + (Icon.padding * 2)
     windowsArray := [] ; An array of objects of the "Window" class
     outline := "" ; An object of the "Outline" class
 
@@ -44,7 +45,7 @@ class Main {
     }
 
     __Delete() {
-        AnimateWindow(this.gui.hwnd, 50, "0x90000")        
+        AnimateWindow(this.gui.hwnd, 50, "0x90000")
         this.gui.Destroy()
     }
 
@@ -81,7 +82,10 @@ class Main {
 
             Window.EnableShadow(this.gui.hwnd)
 
-            this.gui.Show("w" (((Icon.padding + this.windowsArray[1].icon.size) * this.windowsArray.Length) - WindowsVersionVariables["MainOffset"]) + 20 " h" this.HMAIN " Hide") ;The "20" at the end adds 20 more pixels to the total width to make sure the last image is 20 pixels away from the window border
+            this.w := (
+                ((Icon.padding + this.windowsArray[1].icon.size) * this.windowsArray.Length) + Icon.padding
+            )
+            this.gui.Show("w" this.w " h" this.h " Hide")
 
             DetectHiddenWindows(true)
 

@@ -43,13 +43,12 @@ isPreviewsWindowOpen := false
 
 StartupComplete := true
 
-try {
-    #HotIf StartupComplete
-    !Tab::
-    !+Tab:: {
-        global MainWindow
-        global PreviewsWindow
+#HotIf StartupComplete
+!Tab:: {
+    global MainWindow
+    global PreviewsWindow
 
+    try {
         If (!MainWindow) {
             try {
                 ; The user can be very quick to release the "Alt" key, triggering the "LAlt Up" hotkey and interrupting the normal creation of the App Switcher windows.
@@ -75,13 +74,53 @@ try {
                 MainWindow.outline.move(true)
             }
         }
+    } catch Error as err {
+        showErrorTooltip(err)
     }
+}
 
-    #HotIf StartupComplete
-    !SC029:: {
-        global MainWindow
-        global PreviewsWindow
+#HotIf StartupComplete
+!+Tab:: {
+    global MainWindow
+    global PreviewsWindow
 
+    try {
+        If (!MainWindow) {
+            try {
+                ; The user can be very quick to release the "Alt" key, triggering the "LAlt Up" hotkey and interrupting the normal creation of the App Switcher windows.
+                ;The solution is to suspend all hotkeys until the App Switcher windows have been created, check whether "LAlt" is still held down and then act accordingly.
+
+                Suspend(true)
+                MainWindow := Main(1000) ; "1000" just so that it will start at the end of the list
+                Suspend(false)
+
+                if (!GetKeyState("LAlt")) {
+                    WinActivate("ahk_id" MainWindow.windowsArray[MainWindow.outline.tabCounter].windowID)
+                }
+            } catch NoWindowsError {
+                MainWindow := ""
+            }
+        } else {
+            if (MainWindow.windowsArray.Length > 0) {
+                if (PreviewsWindow) {
+                    PreviewsWindow.__Delete()
+                    PreviewsWindow := ""
+                }
+
+                MainWindow.outline.move(false)
+            }
+        }
+    } catch Error as err {
+        showErrorTooltip(err)
+    }
+}
+
+#HotIf StartupComplete
+!SC029:: {
+    global MainWindow
+    global PreviewsWindow
+
+    try {
         If !MainWindow AND !PreviewsWindow {
             Window.AlternateWindows()
         } else if MainWindow AND !PreviewsWindow {
@@ -93,24 +132,32 @@ try {
         } else if MainWindow AND PreviewsWindow {
             PreviewsWindow.outline.draw(true)
         }
+    } catch Error as err {
+        showErrorTooltip(err)
     }
+}
 
-    #HotIf StartupComplete
-    !+SC029:: {
-        global MainWindow
-        global PreviewsWindow
+#HotIf StartupComplete
+!+SC029:: {
+    global MainWindow
+    global PreviewsWindow
 
+    try {
         if MainWindow AND PreviewsWindow {
             PreviewsWindow.outline.draw(false)
         }
+    } catch Error as err {
+        showErrorTooltip(err)
     }
+}
 
-    #HotIf (MainWindow AND MainWindow.windowsArray.Length > 0) AND StartupComplete
-    LAlt Up::
-    {
-        global MainWindow
-        global PreviewsWindow
+#HotIf (MainWindow AND MainWindow.windowsArray.Length > 0) AND StartupComplete
+LAlt Up::
+{
+    global MainWindow
+    global PreviewsWindow
 
+    try {
         If PreviewsWindow
         {
             try
@@ -133,15 +180,19 @@ try {
                 PreviewsWindow := ""
             }
         }
+    } catch Error as err {
+        showErrorTooltip(err)
     }
+}
 
-    #HotIf StartupComplete
-    !Esc::
-    {
-        global MainWindow
-        global PreviewsWindow
-        global isPreviewsWindowOpen
+#HotIf StartupComplete
+!Esc::
+{
+    global MainWindow
+    global PreviewsWindow
+    global isPreviewsWindowOpen
 
+    try {
         If MainWindow AND !PreviewsWindow
         {
             tempTabCounter := MainWindow.outline.tabCounter
@@ -156,7 +207,7 @@ try {
             MainWindow.__Delete()
 
             try {
-                MainWindow := Main(tempTabCounter)  
+                MainWindow := Main(tempTabCounter)
             } catch NoWindowsError {
                 MainWindow := ""
             }
@@ -186,7 +237,11 @@ try {
 
             isPreviewsWindowOpen := false
         }
+
+        if (!GetKeyState("LAlt")) {
+            WinActivate("ahk_id" MainWindow.windowsArray[MainWindow.outline.tabCounter].windowID)
+        }
+    } catch Error as err {
+        showErrorTooltip(err)
     }
-} catch Error as err {
-    showErrorTooltip(err)
 }

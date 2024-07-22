@@ -87,7 +87,9 @@ class Badge {
                 this.ctrlTextNumber := gui.Add(
                     "Text",
                     "x" . (xPos + size - this.wText / (this.count > 9 ? 0.58 : 0.78)) .
-                    " y" . (yPos + size - this.wText / 0.52) . " " . this.textColor,
+                    " y" . (yPos + size - this.wText / 0.52) .
+                    " w100" . " " . 
+                    this.textColor,
                     this.count
                 )
             }

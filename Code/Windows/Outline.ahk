@@ -83,7 +83,12 @@ class Outline {
             tempWin.icon.ctrl.Value := tempWin.icon.filepath
             tempWin.badge := previousBadge
         } else {
-            tempWin.icon.parameters := "x10 y10 h" . tempWin.icon.size . " w" . tempWin.icon.size . " BackgroundTrans"
+            tempWin.icon.parameters :=
+                "x" . Icon.padding / 2 .
+                " y" . Icon.padding / 2 .
+                " h" . tempWin.icon.size .
+                " w" . tempWin.icon.size .
+                " BackgroundTrans"
         }
 
         return tempWin
@@ -103,7 +108,13 @@ class Outline {
         this.window := this.localGetWindow(this.main.windowsArray[this.tabCounter])
         this.window.badge.update(this.window)
 
-        WinMove(this.main.x + this.main.windowsArray[this.tabCounter].icon.x - 10, , , , "ahk_id " this.gui.Hwnd)
+        WinMove(
+            this.main.x + this.main.windowsArray[this.tabCounter].icon.x - Icon.padding / 2,
+            ,
+            ,
+            ,
+            "ahk_id " this.gui.Hwnd
+        )
     }
 
     /**
@@ -121,10 +132,18 @@ class Outline {
                 this.window.icon.size,
                 true
             )
+
             this.window.badge.update(this.window)
 
             Window.EnableShadow(this.gui.Hwnd)
-            this.gui.Show("x" this.main.x + this.main.windowsArray[this.tabCounter].icon.x - 10 " y" this.main.y + 10 " w" this.window.icon.size + 20 " h" this.window.icon.size + 20 " Hide")
+
+            this.gui.Show(
+                "x" this.main.x + this.main.windowsArray[this.tabCounter].icon.x - Icon.padding / 2
+                " y" this.main.y + Icon.padding / 2
+                " w" this.window.icon.size + Icon.padding
+                " h" this.window.icon.size + Icon.padding
+                " Hide"
+            )
         } catch Error as err {
             showErrorTooltip(err)
         }

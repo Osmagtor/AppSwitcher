@@ -10,6 +10,7 @@ class PreviewOutline {
     previewCounter := ""
     subWindows := "" ; The object of the "Window" class drawn on the outline window
     owner := "" ; The owner window as an object of the "PreviewMain" class
+    preview := "" ; The object of the "Preview" class that is drawn on the gui of an object of this class
 
     /**
      * Constructor
@@ -22,7 +23,6 @@ class PreviewOutline {
         if previewsWindow {
             this.owner := previewsWindow
             this.gui := Gui("+AlwaysOnTop -Caption +toolwindow -Border +Owner" this.owner.gui.hwnd, this.title)
-            this.owner.createPreviews(subWindows, this.gui.Hwnd)
 
             if position {
                 this.previewCounter := position < 1 ? 1
@@ -62,9 +62,28 @@ class PreviewOutline {
             } else {
                 this.localGetPosData()
                 Window.EnableShadow(this.gui.Hwnd)
-                this.gui.Show("x" this.x " y" this.y " w" this.w " h" this.h " Hide")
+                this.gui.Show(
+                    "x" this.x
+                    " y" this.y
+                    " w" this.w
+                    " h" this.h
+                    " Hide"
+                )
                 WinActivate("Super AltTab.ahk")
             }
+
+            if (this.preview) {
+                this.preview.erase()
+            }
+
+            this.preview := Preview(
+                PreviewsMain.padding / 2,
+                PreviewsMain.padding / 2,
+                this.owner.previewsArray[this.previewCounter].w,
+                this.owner.h + (PreviewsMain.padding / 2) * 3,
+                this.owner.previewsArray[this.previewCounter].windowID,
+                this
+            )
         } catch Error as err {
             showErrorTooltip(err)
         }
@@ -75,10 +94,25 @@ class PreviewOutline {
      * in relation to the previews already stored in an object of the "PreviewMain" class
      */
     localGetPosData() {
-        this.x := this.owner.previewsArray[this.previewCounter].x - 5
-        this.y := this.owner.y + 10
-        this.w := Preview.calculatePreviewWidth(this.subWindows[this.previewCounter].w, this.subWindows[this.previewCounter].h, this.owner.windowHeight) + 11
-        this.h := this.owner.h - 49
+        this.x := (
+            this.owner.x
+            + this.owner.previewsArray[this.previewCounter].x1
+            - PreviewsMain.padding / 2
+            + 0.3
+        )
+        this.y := (
+            this.owner.y
+            + PreviewsMain.padding / 2
+            + 0.6
+        )
+        this.w := (
+            this.owner.previewsArray[this.previewCounter].w
+            + PreviewsMain.padding
+        )
+        this.h := (
+            this.owner.h
+            + PreviewsMain.padding * 2
+        )
     }
 
     /**
