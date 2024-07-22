@@ -34,13 +34,17 @@ class Main {
 
             ; Adding the outline window
             this.outline := Outline(this, position)
+
+            ; Unhiding the main window and the outline window
+            AnimateWindow(this.gui.hwnd, 50, "0xa0000")
+            AnimateWindow(this.outline.gui.Hwnd, 50, "0xa0000")
         } else {
             throw NoWindowsError()
         }
     }
 
     __Delete() {
-        AnimateWindow(this.gui.hwnd, 50, "0x90000")
+        AnimateWindow(this.gui.hwnd, 50, "0x90000")        
         this.gui.Destroy()
     }
 
@@ -78,11 +82,14 @@ class Main {
             Window.EnableShadow(this.gui.hwnd)
 
             this.gui.Show("w" (((Icon.padding + this.windowsArray[1].icon.size) * this.windowsArray.Length) - WindowsVersionVariables["MainOffset"]) + 20 " h" this.HMAIN " Hide") ;The "20" at the end adds 20 more pixels to the total width to make sure the last image is 20 pixels away from the window border
-            AnimateWindow(this.gui.hwnd, 50, "0xa0000")
+
+            DetectHiddenWindows(true)
 
             WinGetPos(&xPos, &yPos, , , "ahk_id" this.gui.Hwnd)
             this.x := xPos
             this.y := yPos
+
+            DetectHiddenWindows(false)
         }
     }
 }

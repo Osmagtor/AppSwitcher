@@ -62,7 +62,7 @@ class PreviewOutline {
             } else {
                 this.localGetPosData()
                 Window.EnableShadow(this.gui.Hwnd)
-                this.gui.Show("x" this.x " y" this.y " w" this.w " h" this.h)
+                this.gui.Show("x" this.x " y" this.y " w" this.w " h" this.h " Hide")
                 WinActivate("Super AltTab.ahk")
             }
         } catch Error as err {

@@ -8,6 +8,7 @@ class Preview {
     h := ""
     gui := "" ; An object of the AHK "gui" class
     windowID := "" ; The ID of the window this object represents
+    monitorNumber := ""
 
     /**
      * Constructor
@@ -37,7 +38,7 @@ class Preview {
      */
     localDraw(PreviewCounter, hwnd) {
         this.gui := Gui("-Caption +ToolWindow +AlwaysOnTop +Owner" hwnd, "Preview" PreviewCounter)
-        this.gui.Show("x" this.x " y" this.y " w" this.w " h" this.h)
+        this.gui.Show("x" this.x " y" this.y " w" this.w " h" this.h " Hide")
 
         Window.EnableShadow(this.gui.Hwnd)
 
@@ -92,18 +93,20 @@ class Preview {
      */
     localDrawMonitorNumber() {
         try {
+            DetectHiddenWindows(true)
             WinGetPos(&x, &y, &w, &h, "ahk_id" this.gui.hwnd)
+            DetectHiddenWindows(false)
 
-            monitorNumber := Gui("+AlwaysOnTop -Caption +toolwindow +Owner" this.gui.hwnd, "test")
-            monitorNumber.SetFont("s25 q5", "Segoe UI")
-            monitorNumber.Add("Text", "x3 y-7 cffffff", "⬜")
+            this.monitorNumber := Gui("+AlwaysOnTop -Caption +toolwindow +Owner" this.gui.hwnd, "test")
+            this.monitorNumber.SetFont("s25 q5", "Segoe UI")
+            this.monitorNumber.Add("Text", "x3 y-7 cffffff", "⬜")
 
-            monitorNumber.SetFont("s10 q5 w2000", "Segoe UI")
-            monitorNumber.Add("Text", "x14 y9 cffffff", (MonitorGetCount() + 1) - Window.WinGetMonitorIndex(this.windowID))
-            monitorNumber.BackColor := "000000"
+            this.monitorNumber.SetFont("s10 q5 w2000", "Segoe UI")
+            this.monitorNumber.Add("Text", "x14 y9 cffffff", (MonitorGetCount() + 1) - Window.WinGetMonitorIndex(this.windowID))
+            this.monitorNumber.BackColor := "000000"
 
-            Window.EnableShadow(monitorNumber.hwnd)
-            monitorNumber.Show("x" x + w - 30 "y" y + h - 30 "w35 h35")
+            Window.EnableShadow(this.monitorNumber.hwnd)
+            this.monitorNumber.Show("x" x + w - 30 "y" y + h - 30 "w35 h35 Hide")
         } catch Error as err {
             showErrorTooltip(err)
         }

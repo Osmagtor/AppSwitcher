@@ -9,6 +9,7 @@ class PreviewsMain {
     title := "Super Previews.ahk"
     previewsArray := []
     outline := "" ; An object of the "PreviewOutline" class
+    main := "" ; An object of the "Main" class
 
     /**
      * Constructor
@@ -21,6 +22,7 @@ class PreviewsMain {
      */
     __New(main, window, TaskbarLeft, TaskbarRight, position := "") {
         if (main AND window.windowSubWindows.length > 1) {
+            this.main := main
             this.h := this.windowHeight + (Icon.padding * 2)
             this.gui := Gui("+AlwaysOnTop -Caption +toolwindow -Border +Owner" main.gui.hwnd, this.title)
 
@@ -31,12 +33,24 @@ class PreviewsMain {
 
             this.localDraw(window, TaskbarLeft, TaskbarRight, main.HMAIN)
             this.outline := PreviewOutline(this, main.outline.window.windowSubWindows, position)
+
+            ; Unhiding the Previews Main window, the Previews Outline Window and all the Preview Windows
+
+            for index in this.previewsArray {
+                GroupAdd("Previews", "ahk_id" index.gui.hwnd)
+                GroupAdd("Previews", "ahk_id" index.monitorNumber.hwnd)
+            }
+
+            AnimateWindow(this.gui.hwnd, 50, "0xa0000")
+            AnimateWindow(this.outline.gui.hwnd, 50, "0xa0000")
+            WinShow("ahk_group Previews")
         } else {
             throw NoWindowsError()
         }
     }
 
     __Delete() {
+        WinActivate("ahk_id" this.main.gui.hwnd)
         AnimateWindow(this.gui.hwnd, 50, "0x90000")
         this.gui.Destroy()
     }
@@ -77,7 +91,6 @@ class PreviewsMain {
                 Window.EnableShadow(this.gui.hwnd)
 
                 this.gui.Show("x" this.x " y" this.y " w" this.w " h" this.h " Hide")
-                AnimateWindow(this.gui.hwnd, 50, "0xa0000")
             }
         } catch Error as err {
             showErrorTooltip(err)

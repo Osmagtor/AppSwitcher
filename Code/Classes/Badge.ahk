@@ -47,6 +47,9 @@ class Badge {
 
         try {
             if (this.onTop OR outline) {
+
+                ; BADGE
+
                 gui.SetFont(this.badgeParam, this.font)
                 this.ctrlBadgeOnTop := gui.Add(
                     "Text",
@@ -54,6 +57,8 @@ class Badge {
                     " y" . (yPos - this.wBadge / 2.60) . " " . this.badgeOnTopColor,
                     "⚫"
                 )
+
+                ; TEXT
 
                 gui.SetFont(this.textParam, this.font)
                 this.ctrlTextOnTop := gui.Add(
@@ -65,6 +70,9 @@ class Badge {
             }
 
             if (this.count > 1 OR outline) {
+
+                ; BADGE
+
                 gui.SetFont(this.badgeParam, this.font)
                 this.ctrlBadgeNumber := gui.Add(
                     "Text",
@@ -72,6 +80,8 @@ class Badge {
                     " y" . (yPos + size - this.wBadge / 0.67) . " " . this.badgeNumberColor,
                     "⚫"
                 )
+
+                ; TEXT
 
                 gui.SetFont(this.textParam, this.font)
                 this.ctrlTextNumber := gui.Add(
@@ -93,12 +103,19 @@ class Badge {
      */
     update(window) {
         try {
+            this.count := window.windowSubWindows.length
+
             this.ctrlBadgeOnTop.Visible := window.onTop
             this.ctrlTextOnTop.Visible := window.onTop
 
             this.ctrlBadgeNumber.Visible := window.windowSubWindows.length > 1
-            this.ctrlTextNumber.Value := window.windowSubWindows.Length
             this.ctrlTextNumber.Visible := window.windowSubWindows.length > 1
+
+            this.ctrlTextNumber.Move(
+                window.icon.x + window.icon.size - this.wText / (this.count > 9 ? 0.58 : 0.78)
+            )
+
+            this.ctrlTextNumber.Value := window.windowSubWindows.Length
         } catch Error as err {
             showErrorTooltip(err)
         }

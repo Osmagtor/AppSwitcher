@@ -45,13 +45,23 @@ StartupComplete := true
 
 try {
     #HotIf StartupComplete
-    !Tab:: {
+    !Tab::
+    !+Tab:: {
         global MainWindow
         global PreviewsWindow
 
         If (!MainWindow) {
             try {
+                ; The user can be very quick to release the "Alt" key, triggering the "LAlt Up" hotkey and interrupting the normal creation of the App Switcher windows.
+                ;The solution is to suspend all hotkeys until the App Switcher windows have been created, check whether "LAlt" is still held down and then act accordingly.
+
+                Suspend(true)
                 MainWindow := Main()
+                Suspend(false)
+
+                if (!GetKeyState("LAlt")) {
+                    WinActivate("ahk_id" MainWindow.windowsArray[MainWindow.outline.tabCounter].windowID)
+                }
             } catch NoWindowsError {
                 MainWindow := ""
             }
@@ -63,29 +73,6 @@ try {
                 }
 
                 MainWindow.outline.move(true)
-            }
-        }
-    }
-
-    #HotIf StartupComplete
-    !+Tab:: {
-        global MainWindow
-        global PreviewsWindow
-
-        If (!MainWindow) {
-            try {
-                MainWindow := Main()
-            } catch NoWindowsError {
-                MainWindow := ""
-            }
-        } else {
-            if (MainWindow.windowsArray.Length > 0) {
-                if (PreviewsWindow) {
-                    PreviewsWindow.__Delete()
-                    PreviewsWindow := ""
-                }
-
-                MainWindow.outline.move(false)
             }
         }
     }
@@ -119,36 +106,32 @@ try {
     }
 
     #HotIf (MainWindow AND MainWindow.windowsArray.Length > 0) AND StartupComplete
-    Alt Up::
+    LAlt Up::
     {
         global MainWindow
         global PreviewsWindow
 
         If PreviewsWindow
         {
-            AnimateWindow(MainWindow.gui.hwnd, 50, "0x90000")
-
             try
             {
                 WinActivate("ahk_id" PreviewsWindow.outline.getWindow().windowID)
-            }
 
-            MainWindow.__Delete()
-            MainWindow := ""
-            PreviewsWindow := ""
+                MainWindow.__Delete()
+                MainWindow := ""
+                PreviewsWindow := ""
+            }
         }
         Else
         {
-            AnimateWindow(MainWindow.gui.hwnd, 50, "0x90000")
-
             try
             {
                 WinActivate("ahk_id" MainWindow.outline.window.windowID)
-            }
 
-            MainWindow.__Delete()
-            MainWindow := ""
-            PreviewsWindow := ""
+                MainWindow.__Delete()
+                MainWindow := ""
+                PreviewsWindow := ""
+            }
         }
     }
 
@@ -158,59 +141,50 @@ try {
         global MainWindow
         global PreviewsWindow
         global isPreviewsWindowOpen
-        global altEsc
 
-        If altEsc {
-            If MainWindow AND !PreviewsWindow
+        If MainWindow AND !PreviewsWindow
+        {
+            tempTabCounter := MainWindow.outline.tabCounter
+
+            for i in MainWindow.outline.window.windowSubWindows
             {
-                tempTabCounter := MainWindow.outline.tabCounter
-
-                for i in MainWindow.outline.window.windowSubWindows
-                {
-                    try {
-                        WinClose("ahk_id" i.windowID)
-                    }
-                }
-
-                MainWindow.__Delete()
-
                 try {
-                    MainWindow := Main(tempTabCounter)
-                } catch NoWindowsError {
-                    MainWindow := ""
+                    WinClose("ahk_id" i.windowID)
                 }
             }
-            Else if MainWindow AND PreviewsWindow
-            {
-                isPreviewsWindowOpen := true
-                tempTabCounter := MainWindow.outline.tabCounter
-                tempPreviewCounter := PreviewsWindow.outline.previewCounter
 
-                WinActivate("ahk_id" MainWindow.gui.hwnd)
-                WinClose("ahk_id" PreviewsWindow.outline.getWindow().windowID)
+            MainWindow.__Delete()
 
-                MainWindow.__Delete()
-
-                try {
-                    MainWindow := Main(tempTabCounter)
-                } catch NoWindowsError {
-                    MainWindow := ""
-                }
-
-                try {
-                    PreviewsWindow := PreviewsMain(MainWindow, MainWindow.outline.window, TaskbarLeft, TaskbarRight, tempPreviewCounter)
-                } catch NoWindowsError {
-                    PreviewsWindow := ""
-                }
-
-                isPreviewsWindowOpen := false
-            }
-        } else {
-            If MainWindow {
-                MainWindow.__Delete()
+            try {
+                MainWindow := Main(tempTabCounter)  
+            } catch NoWindowsError {
                 MainWindow := ""
+            }
+        }
+        Else if MainWindow AND PreviewsWindow
+        {
+            isPreviewsWindowOpen := true
+            tempTabCounter := MainWindow.outline.tabCounter
+            tempPreviewCounter := PreviewsWindow.outline.previewCounter
+
+            WinActivate("ahk_id" MainWindow.gui.hwnd)
+            WinClose("ahk_id" PreviewsWindow.outline.getWindow().windowID)
+
+            MainWindow.__Delete()
+
+            try {
+                MainWindow := Main(tempTabCounter)
+            } catch NoWindowsError {
+                MainWindow := ""
+            }
+
+            try {
+                PreviewsWindow := PreviewsMain(MainWindow, MainWindow.outline.window, TaskbarLeft, TaskbarRight, tempPreviewCounter)
+            } catch NoWindowsError {
                 PreviewsWindow := ""
             }
+
+            isPreviewsWindowOpen := false
         }
     }
 } catch Error as err {

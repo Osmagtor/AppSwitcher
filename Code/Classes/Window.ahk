@@ -44,7 +44,7 @@ class Window {
         } else {
             throw NoWindowsError()
         }
-    }
+    }   
 
     /**
      * Method to render a drop shadow in the window of a given handle
