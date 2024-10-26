@@ -68,7 +68,7 @@ checkUpdates() {
 
     ; The links in the array below are changed whenever a new version is released. They contain different version numbers based on the next possible version numbers
 
-    websites := ['https://github.com/Osmagtor/AppSwitcher/releases/tag/v7.1.5', 'https://github.com/Osmagtor/AppSwitcher/releases/tag/v7.2', 'https://github.com/Osmagtor/AppSwitcher/releases/tag/v8']
+    websites := ['https://github.com/Osmagtor/AppSwitcher/releases/tag/v7.1.6', 'https://github.com/Osmagtor/AppSwitcher/releases/tag/v7.2', 'https://github.com/Osmagtor/AppSwitcher/releases/tag/v8']
 
     ; Then we download each of the websites from the links in the "websites" array above and "loop read" through them to find out if they really exist. If the text "404 "This is not the web page you are looking for"" is found, then there is no update yet on that website. So, we break out of both loops using a simple "goto" and delete all .html files. If it the text is not found, the innermost loop will end normally and "updateAvailable" will change to true, triggering the conditional structure further below
 
@@ -132,6 +132,11 @@ initializeMenus() {
     A_TrayMenu.Add("Alt + Escape Behaviour", AltEscSubMenu)
     A_TrayMenu.Add() ; separator
     A_TrayMenu.Add("Set icon size", SetIconSize)
+    A_TrayMenu.Add() ; separator
+    ModifierKeySubMenu := Menu()
+    ModifierKeySubMenu.Add("Alt", Alt)
+    ModifierKeySubMenu.Add("Control", Control)
+    A_TrayMenu.Add("Set modifier key", ModifierKeySubMenu)
     A_TrayMenu.Add() ; separator
     A_TrayMenu.Add("About", About)
 
@@ -205,6 +210,28 @@ initializeMenus() {
             AppearanceSubMenu.Check("System Default")
         }
     }
+
+    try {
+        ModifierValue := IniRead("settings.ini", "behaviour", "modifier")
+        If (ModifierValue = "control")
+        {
+            ThemeValueVariables["Modifier"] := "control"
+            ModifierKeySubMenu.UnCheck("Alt")
+            ModifierKeySubMenu.Check("Control")  
+        }
+        Else if (ModifierValue = "alt")
+        {
+            ThemeValueVariables["Modifier"] := "alt"
+            ModifierKeySubMenu.UnCheck("Control")
+            ModifierKeySubMenu.Check("Alt")  
+        }
+    } catch {
+        ThemeValueVariables["Modifier"] := "control"
+        ModifierKeySubMenu.UnCheck("Control")
+        ModifierKeySubMenu.Check("Alt")  
+        IniWrite("alt", "settings.ini", "behaviour", "modifier")
+    }
+
     Return
 
     ; These are the functions that are triggered when clicking on the different options of the tray icon menu
@@ -256,6 +283,28 @@ initializeMenus() {
         Return
     }
 
+    Control(*)
+    {
+        ModifierKeySubMenu.UnCheck("Alt")
+        ModifierKeySubMenu.Check("Control")
+
+        IniWrite("control", "settings.ini", "behaviour", "modifier")
+
+        ThemeValueVariables["Modifier"] := "control"
+        Return
+    }
+
+    Alt(*)
+    {
+        ModifierKeySubMenu.UnCheck("Control")
+        ModifierKeySubMenu.Check("Alt")
+
+        IniWrite("alt", "settings.ini", "behaviour", "modifier")
+
+        ThemeValueVariables["Modifier"] := "alt"
+        Return
+    }
+
     Uninstall(*)
     {
         Run A_WorkingDir "\uninstall.exe"
@@ -265,7 +314,7 @@ initializeMenus() {
     About(*)
     {
         AboutGui := Gui("+ToolWindow", "About",)
-        AboutGui.Add("Text", "x30 y10", "Version 7.1.4")
+        AboutGui.Add("Text", "x30 y10", "Version 7.1.5")
         AboutGui.Add("Text", "x10 y+m", "Óscar Maganto Torres")
         AboutGui.Add("Button", "x36 y+m", "Github").OnEvent("Click", OpenGithub)
         AboutGui.Show()

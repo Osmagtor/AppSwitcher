@@ -43,8 +43,53 @@ isPreviewsWindowOpen := false
 
 StartupComplete := true
 
-#HotIf StartupComplete
+; Shortcuts
+
+#HotIf StartupComplete AND ThemeValueVariables["Modifier"] = "alt"
 !Tab:: {
+    altTab()
+}
+!+Tab:: {
+    altShiftTab()
+}
+!SC029:: {
+    altTilde()
+}
+!+SC029:: {
+    altShiftTilde()
+}
+!Esc:: {
+    altEscape()
+}
+#HotIf StartupComplete AND ThemeValueVariables["Modifier"] = "control"
+^Tab:: {
+    altTab()
+}
+^+Tab:: {
+    altShiftTab()
+}
+^SC029:: {
+    altTilde()
+}
+^+SC029:: {
+    altShiftTilde()
+}
+^Esc:: {
+    altEscape()
+}
+
+#HotIf (MainWindow AND MainWindow.windowsArray.Length > 0) AND StartupComplete AND ThemeValueVariables["Modifier"] = "alt"
+LAlt Up:: {
+    altUp()
+}
+#HotIf (MainWindow AND MainWindow.windowsArray.Length > 0) AND StartupComplete AND ThemeValueVariables["Modifier"] = "control"
+LControl Up:: {
+    altUp()
+}
+
+; Shortcut functions
+
+altTab() {
     global MainWindow
     global PreviewsWindow
 
@@ -58,7 +103,7 @@ StartupComplete := true
                 MainWindow := Main()
                 Suspend(false)
 
-                if (!GetKeyState("LAlt")) {
+                if (ThemeValueVariables["Modifier"] = "alt" ? !GetKeyState("LAlt") : !GetKeyState("LControl")) {
                     WinActivate("ahk_id" MainWindow.windowsArray[MainWindow.outline.tabCounter].windowID)
                 }
             } catch NoWindowsError {
@@ -79,8 +124,7 @@ StartupComplete := true
     }
 }
 
-#HotIf StartupComplete
-!+Tab:: {
+altShiftTab() {
     global MainWindow
     global PreviewsWindow
 
@@ -94,7 +138,7 @@ StartupComplete := true
                 MainWindow := Main(1000) ; "1000" just so that it will start at the end of the list
                 Suspend(false)
 
-                if (!GetKeyState("LAlt")) {
+                if (ThemeValueVariables["Modifier"] = "alt" ? !GetKeyState("LAlt") : !GetKeyState("LControl")) {
                     WinActivate("ahk_id" MainWindow.windowsArray[MainWindow.outline.tabCounter].windowID)
                 }
             } catch NoWindowsError {
@@ -115,8 +159,7 @@ StartupComplete := true
     }
 }
 
-#HotIf StartupComplete
-!SC029:: {
+altTilde() {
     global MainWindow
     global PreviewsWindow
 
@@ -137,8 +180,7 @@ StartupComplete := true
     }
 }
 
-#HotIf StartupComplete
-!+SC029:: {
+altShiftTilde() {
     global MainWindow
     global PreviewsWindow
 
@@ -151,9 +193,7 @@ StartupComplete := true
     }
 }
 
-#HotIf (MainWindow AND MainWindow.windowsArray.Length > 0) AND StartupComplete
-LAlt Up::
-{
+altUp() {
     global MainWindow
     global PreviewsWindow
 
@@ -185,9 +225,7 @@ LAlt Up::
     }
 }
 
-#HotIf StartupComplete
-!Esc::
-{
+altEscape() {
     global MainWindow
     global PreviewsWindow
     global isPreviewsWindowOpen
@@ -238,7 +276,7 @@ LAlt Up::
             isPreviewsWindowOpen := false
         }
 
-        if (!GetKeyState("LAlt")) {
+        if (ThemeValueVariables["Modifier"] = "alt" ? !GetKeyState("LAlt") : !GetKeyState("LControl")) {
             WinActivate("ahk_id" MainWindow.windowsArray[MainWindow.outline.tabCounter].windowID)
         }
     } catch Error as err {
