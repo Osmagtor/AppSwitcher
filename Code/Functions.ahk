@@ -1,13 +1,15 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
+#Include Libraries\simple-http.ahk
+#Include Libraries\JSON.ahk
 
 global MainWindow
 
 /**
  * Method to render a fade-in animation for the window of a given handle
- * @param hWnd 
- * @param Duration 
- * @param Flag 
+ * @param {number} hWnd 
+ * @param {number} Duration 
+ * @param {number} Flag 
  * @returns {Float | Integer | String} 
  */
 AnimateWindow(hWnd, Duration, Flag) {
@@ -45,11 +47,11 @@ startupChecks() {
         FileInstall "settings.ini", A_WorkingDir "\settings.ini", 1
     }
 
-
     ; GETTING OS-DEPENDENT VARIABLES READY
     ; These are various variables that control different aspects of the appearance of the application depending on the version of Windows. I used a "map" to bind them all together
 
     global WindowsVersionVariables := Map()
+
     If (SubStr(A_OSVersion, 6) < 20000) ; Windows 10
     {
         WindowsVersionVariables["Gap"] := 0
@@ -66,28 +68,24 @@ startupChecks() {
 checkUpdates() {
     updateAvailable := false
 
-    ; The links in the array below are changed whenever a new version is released. They contain different version numbers based on the next possible version numbers
+    try {
 
-    websites := ['https://github.com/Osmagtor/AppSwitcher/releases/tag/v7.1.6', 'https://github.com/Osmagtor/AppSwitcher/releases/tag/v7.2', 'https://github.com/Osmagtor/AppSwitcher/releases/tag/v8']
+        website := 'https://api.github.com/repos/Osmagtor/AppSwitcher/releases/latest'
 
-    ; Then we download each of the websites from the links in the "websites" array above and "loop read" through them to find out if they really exist. If the text "404 "This is not the web page you are looking for"" is found, then there is no update yet on that website. So, we break out of both loops using a simple "goto" and delete all .html files. If it the text is not found, the innermost loop will end normally and "updateAvailable" will change to true, triggering the conditional structure further below
+        http := SimpleHTTP()
+        content := http.get(website)
+        parsed := JSON.parse(content)
 
-    Loop websites.Length
-    {
-        Download(websites[A_Index], "test" A_Index ".html")
-        loop read "test" A_Index ".html"
-        {
-            If InStr(A_LoopReadLine, "404 &ldquo;This is not the web page you are looking for&rdquo;")
-            {
-                ;FileDelete("test.html")
-                goto out
+        version := parsed["tag_name"]
+
+        if (SubStr(version, 1, 1) = "v") {
+            version := SubStr(version, 2)
+
+            if (VerCompare(version, "7.1.5") > 0) {
+                updateAvailable := true
             }
         }
-        updateAvailable := true
-out:
-        FileDelete("test" A_Index ".html")
     }
-
 
     if (updateAvailable = true)
     {
@@ -107,7 +105,7 @@ out:
 
         close(*)
         {
-            ExitApp
+            update.Destroy()
         }
     }
 }
@@ -217,18 +215,18 @@ initializeMenus() {
         {
             ThemeValueVariables["Modifier"] := "control"
             ModifierKeySubMenu.UnCheck("Alt")
-            ModifierKeySubMenu.Check("Control")  
+            ModifierKeySubMenu.Check("Control")
         }
         Else if (ModifierValue = "alt")
         {
             ThemeValueVariables["Modifier"] := "alt"
             ModifierKeySubMenu.UnCheck("Control")
-            ModifierKeySubMenu.Check("Alt")  
+            ModifierKeySubMenu.Check("Alt")
         }
     } catch {
         ThemeValueVariables["Modifier"] := "control"
         ModifierKeySubMenu.UnCheck("Control")
-        ModifierKeySubMenu.Check("Alt")  
+        ModifierKeySubMenu.Check("Alt")
         IniWrite("alt", "settings.ini", "behaviour", "modifier")
     }
 
@@ -382,7 +380,7 @@ initializeMenus() {
 
 /**
  * Method to display a tooltip when a critical error occurs and save it to "errorlog.ini"
- * @param error The message to display
+ * @param {Error} error The message to display
  */
 showErrorTooltip(error) {
     ToolTip "Error on line " error.Line " in script `"" error.File "`" by `"" error.What ": " error.Message "`""
@@ -398,9 +396,9 @@ showErrorTooltip(error) {
 /**
  * Internal method to close the app when another window gains focus
  * @param wParam
- * @param lParam 
- * @param msg 
- * @param hwnd 
+ * @param lParam
+ * @param msg
+ * @param hwnd
  */
 FocusLost(wParam, lParam, msg, hwnd) {
     global MainWindow
