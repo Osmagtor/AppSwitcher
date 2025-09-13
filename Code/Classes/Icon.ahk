@@ -25,19 +25,19 @@ class Icon {
     __New(title, id, class, uwp, position) {
         this.filepath := uwp OR InStr(WinGetProcessPath("ahk_id" id), "C:\Program Files\WindowsApps\") ?
             this.localGetUWPIcon(title, id) :
-                WinGetProcessPath("ahk_id" id)
+            WinGetProcessPath("ahk_id" id)
 
         this.parameters := position = 1 ?
-            "x" . Icon.padding . 
-            " y" . Icon.padding . 
-            " h" . this.size . 
-            " w" . this.size . 
+            "x" . Icon.padding .
+            " y" . Icon.padding .
+            " h" . this.size .
+            " w" . this.size .
             " BackgroundTrans"
-                : "x+m xp" . this.size + Icon.padding . 
-                " y" . Icon.padding . 
-                " h" . this.size . 
-                " w" . this.size . 
-                " BackgroundTrans"
+            : "x+m xp" . this.size + Icon.padding .
+            " y" . Icon.padding .
+            " h" . this.size .
+            " w" . this.size .
+            " BackgroundTrans"
     }
 
     /**
@@ -91,57 +91,50 @@ class Icon {
             }
             else
             {
-                If (WinGetMinMax("ahk_id" id) = -1)
-                {
-                    return A_WinDir "\system32\SHELL32.dll"
+                if (!InStr(WinGetProcessPath("ahk_id" id), "C:\Program Files\WindowsApps\")) {
+                    HWND := ControlGetHwnd("Windows.UI.Core.CoreWindow1", "ahk_id" id)
+                    FinalPath := WinGetProcessPath("ahk_id" HWND)
+                    FinalPathTrim := SubStr(FinalPath, 1, InStr(FinalPath, "\", false, -1))
+                } else {
+                    path := WinGetProcessPath("ahk_id" id)
+                    FinalPathTrim := SubStr(path, 1, InStr(path, "\", false, -1))
                 }
-                else
-                {
-                    if (!InStr(WinGetProcessPath("ahk_id" id), "C:\Program Files\WindowsApps\")) {
-                        HWND := ControlGetHwnd("Windows.UI.Core.CoreWindow1", "ahk_id" id)
-                        FinalPath := WinGetProcessPath("ahk_id" HWND)
-                        FinalPathTrim := SubStr(FinalPath, 1, InStr(FinalPath, "\", false, -1))
-                    } else {
-                        path := WinGetProcessPath("ahk_id" id)
-                        FinalPathTrim := SubStr(path, 1, InStr(path, "\", false, -1))
+
+                ; To account for UWP Apps that have the correct file path but have no app manifest (e.g., Snipping Tool)
+                try {
+                    SearchString := "Square44x44Logo="
+                    images := [".targetsize-" . iconSize . "_altform-lightunplated.png", ".altform-lightunplated_targetsize-" . iconSize . ".png", ".targetsize-" . iconSize . "_altform-unplated.png", ".png"]
+
+                    Loop Read FinalPathTrim "AppxManifest.xml"
+                    {
+                        If InStr(A_LoopReadLine, SearchString)
+                        {
+                            StringTrim := SubStr(A_LoopReadLine, 1, InStr(A_LoopReadLine, ".png", false, -1) - 1)
+                            StringTrim2 := SubStr(StringTrim, InStr(StringTrim, "=", false, -1) + 2)
+                            StringTrim2v2 := SubStr(StringTrim, InStr(StringTrim, ">", false, -1) + 1)
+                            Break
+                        }
                     }
 
-                    ; To account for UWP Apps that have the correct file path but have no app manifest (e.g., Snipping Tool)
-                    try {
-                        SearchString := "Square44x44Logo="
-                        images := [".targetsize-" . iconSize . "_altform-lightunplated.png", ".altform-lightunplated_targetsize-" . iconSize . ".png", ".targetsize-" . iconSize . "_altform-unplated.png", ".png"]
-
-                        Loop Read FinalPathTrim "AppxManifest.xml"
+                    for ArrayIndex in images
+                    {
+                        if FileExist(FinalPathTrim StringTrim2 ArrayIndex)
                         {
-                            If InStr(A_LoopReadLine, SearchString)
-                            {
-                                StringTrim := SubStr(A_LoopReadLine, 1, InStr(A_LoopReadLine, ".png", false, -1) - 1)
-                                StringTrim2 := SubStr(StringTrim, InStr(StringTrim, "=", false, -1) + 2)
-                                StringTrim2v2 := SubStr(StringTrim, InStr(StringTrim, ">", false, -1) + 1)
-                                Break
-                            }
+                            IniWrite(StrReplace(FinalPathTrim StringTrim2 ArrayIndex, iconSize, "XXXX"), "settings.ini", "uwp icon paths", ParsedWindowTitle)
+                            return FinalPathTrim StringTrim2 ArrayIndex
                         }
-
-                        for ArrayIndex in images
-                        {
-                            if FileExist(FinalPathTrim StringTrim2 ArrayIndex)
-                            {
-                                IniWrite(StrReplace(FinalPathTrim StringTrim2 ArrayIndex, iconSize, "XXXX"), "settings.ini", "uwp icon paths", ParsedWindowTitle)
-                                return FinalPathTrim StringTrim2 ArrayIndex
-                            }
-                        }
-
-                        for ArrayIndex in images
-                        {
-                            if FileExist(FinalPathTrim StringTrim2v2 ArrayIndex)
-                            {
-                                IniWrite(StrReplace(FinalPathTrim StringTrim2v2 ArrayIndex, iconSize, "XXXX"), "settings.ini", "uwp icon paths", ParsedWindowTitle)
-                                return FinalPathTrim StringTrim2v2 ArrayIndex
-                            }
-                        }
-                    } catch {
-                        return WinGetProcessPath("ahk_id" id)
                     }
+
+                    for ArrayIndex in images
+                    {
+                        if FileExist(FinalPathTrim StringTrim2v2 ArrayIndex)
+                        {
+                            IniWrite(StrReplace(FinalPathTrim StringTrim2v2 ArrayIndex, iconSize, "XXXX"), "settings.ini", "uwp icon paths", ParsedWindowTitle)
+                            return FinalPathTrim StringTrim2v2 ArrayIndex
+                        }
+                    }
+                } catch {
+                    return WinGetProcessPath("ahk_id" id)
                 }
 
                 return A_WinDir "\system32\SHELL32.dll"
