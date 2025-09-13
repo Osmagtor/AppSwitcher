@@ -4,6 +4,7 @@ class PreviewsMain {
     h := 300
     x := ""
     w := 0
+    y := ""
     static padding := 15
     static textH := 17
     gui := "" ; An object of the AHK "gui" class
@@ -63,7 +64,7 @@ class PreviewsMain {
 
                     this.h := this.w = 0 ?
                         this.h :
-                            (this.h * (A_ScreenWidth - TaskbarLeft - TaskbarRight - 100)) / this.w
+                        (this.h * (A_ScreenWidth - TaskbarLeft - TaskbarRight - 100)) / this.w
                     this.w := 0
 
                     for i in win.windowSubWindows {
@@ -78,7 +79,7 @@ class PreviewsMain {
                 this.x := ((A_ScreenWidth / 2) + (TaskbarRight / 2) + (TaskbarLeft / 2)) - (this.w / 2)
                 this.y := (A_ScreenHeight / 2) + (hmain / 2) + WindowsVersionVariables["Gap"]
 
-                ; Adding the    previews
+                ; Adding the previews
 
                 this.createPreviews(
                     this.main.outline.window.windowSubWindows,
@@ -101,7 +102,7 @@ class PreviewsMain {
         }
     }
 
-    /** + 1
+    /**
      * Method to create all the previews located in the attribute "previewsArray"
      * @param subWindows An array of objects of the "Window" class
      * @param hwnd The handle of the owner window of the previews
@@ -113,7 +114,7 @@ class PreviewsMain {
                     Preview(
                         A_Index = 1 ?
                             PreviewsMain.padding :
-                            this.previewsArray[A_Index - 1].x2 + PreviewsMain.padding,
+                        this.previewsArray[A_Index - 1].x2 + PreviewsMain.padding,
                         PreviewsMain.padding,
                         Preview.calculatePreviewWidth(
                             subWindows[A_Index].w,
