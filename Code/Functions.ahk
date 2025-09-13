@@ -141,6 +141,11 @@ initializeMenus() {
     CloseKeySubMenu.Add("Q", Q)
     A_TrayMenu.Add("Set close key", CloseKeySubMenu)
     A_TrayMenu.Add() ; separator
+    SameWindowKeySubMenu := Menu()
+    SameWindowKeySubMenu.Add("Tilde", Tilde)
+    SameWindowKeySubMenu.Add("Esc", Esc2)
+    A_TrayMenu.Add("Set same window key", SameWindowKeySubMenu)
+    A_TrayMenu.Add() ; separator
     A_TrayMenu.Add("About", About)
 
     global ThemeValueVariables := Map()
@@ -256,6 +261,27 @@ initializeMenus() {
         IniWrite("esc", "settings.ini", "behaviour", "close")
     }
 
+    try {
+        SameWindowKey := IniRead("settings.ini", "behaviour", "same_window")
+        If (SameWindowKey = "tilde")
+        {
+            ThemeValueVariables["SameWindow"] := "tilde"
+            SameWindowKeySubMenu.Uncheck("Esc")
+            SameWindowKeySubMenu.Check("Tilde")
+        }
+        Else if (SameWindowKey = "esc")
+        {
+            ThemeValueVariables["SameWindow"] := "esc"
+            SameWindowKeySubMenu.Uncheck("Tilde")
+            SameWindowKeySubMenu.Check("Esc")
+        }
+    } catch {
+        ThemeValueVariables["SameWindow"] := "tilde"
+        SameWindowKeySubMenu.Uncheck("Esc")
+        SameWindowKeySubMenu.Check("Tilde")
+        IniWrite("tilde", "settings.ini", "behaviour", "same_window")
+    }
+
     Return
 
     ; These are the functions that are triggered when clicking on the different options of the tray icon menu
@@ -348,6 +374,28 @@ initializeMenus() {
         IniWrite("q", "settings.ini", "behaviour", "close")
 
         ThemeValueVariables["Close"] := "q"
+        Return
+    }
+
+    Tilde(*)
+    {
+        SameWindowKeySubMenu.UnCheck("Esc")
+        SameWindowKeySubMenu.Check("Tilde")
+
+        IniWrite("tilde", "settings.ini", "behaviour", "same_window")
+
+        ThemeValueVariables["SameWindow"] := "tilde"
+        Return
+    }
+
+    Esc2(*)
+    {
+        SameWindowKeySubMenu.UnCheck("Tilde")
+        SameWindowKeySubMenu.Check("Esc")
+
+        IniWrite("esc", "settings.ini", "behaviour", "same_window")
+
+        ThemeValueVariables["SameWindow"] := "esc"
         Return
     }
 

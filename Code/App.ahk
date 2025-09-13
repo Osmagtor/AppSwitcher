@@ -52,12 +52,6 @@ StartupComplete := true
 !+Tab:: {
     altShiftTab()
 }
-!SC029:: {
-    altTilde()
-}
-!+SC029:: {
-    altShiftTilde()
-}
 #HotIf StartupComplete AND ThemeValueVariables["Modifier"] = "control"
 ^Tab:: {
     altTab()
@@ -65,10 +59,33 @@ StartupComplete := true
 ^+Tab:: {
     altShiftTab()
 }
+
+#HotIf StartupComplete AND ThemeValueVariables["Modifier"] = "alt" AND ThemeValueVariables["SameWindow"] = "tilde"
+!SC029:: {
+    altTilde()
+}
+!+SC029:: {
+    altShiftTilde()
+}
+#HotIf StartupComplete AND ThemeValueVariables["Modifier"] = "alt" AND ThemeValueVariables["SameWindow"] = "esc"
+!Esc:: {
+    altTilde()
+}
+!+Esc:: {
+    altShiftTilde()
+}
+#HotIf StartupComplete AND ThemeValueVariables["Modifier"] = "control" AND ThemeValueVariables["SameWindow"] = "tilde"
 ^SC029:: {
     altTilde()
 }
 ^+SC029:: {
+    altShiftTilde()
+}
+#HotIf StartupComplete AND ThemeValueVariables["Modifier"] = "control" AND ThemeValueVariables["SameWindow"] = "esc"
+^Esc:: {
+    altTilde()
+}
+^+Esc:: {
     altShiftTilde()
 }
 
