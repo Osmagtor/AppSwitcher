@@ -10,7 +10,7 @@
 #Include Windows/PreviewMain.ahk
 #Include Classes/Preview.ahk
 #Include NoWindowsError.ahk
-#Include RunAsTask.ahk
+#Include Libraries\RunAsTask.ahk
 ProcessSetPriority "A"
 DetectHiddenWindows False ; This way I can more easily discard a good deal of invisible and title-less windows
 InstallKeybdHook ; This is necessary to detect the system messages that the "NotActive" function relies on
@@ -21,7 +21,7 @@ SetKeyDelay -1
 StartupComplete := false
 
 RunAsTask()
-;checkUpdates()
+checkUpdates()
 initializeMenus()
 startupChecks()
 
@@ -89,26 +89,34 @@ LControl Up:: {
 
 ; Shortcut functions
 
+checkModifierAndClose(attempts := 0) {
+
+    global MainWindow
+
+    if (MainWindow) {
+
+        if (ThemeValueVariables["Modifier"] = "alt" ? !GetKeyState("LAlt") : !GetKeyState("LControl")) {
+            MainWindow.__Delete()
+            MainWindow := ""
+            return
+        }
+
+        if (attempts < 5) {
+            SetTimer(() => checkModifierAndClose(attempts + 1), -30)
+        }
+    }
+}
+
 altTab() {
     global MainWindow
     global PreviewsWindow
 
     try {
         If (!MainWindow) {
-            try {
-                ; The user can be very quick to release the "Alt" key, triggering the "LAlt Up" hotkey and interrupting the normal creation of the App Switcher windows.
-                ;The solution is to suspend all hotkeys until the App Switcher windows have been created, check whether "LAlt" is still held down and then act accordingly.
 
-                Suspend(true)
-                MainWindow := Main()
-                Suspend(false)
+            MainWindow := Main()
 
-                if (ThemeValueVariables["Modifier"] = "alt" ? !GetKeyState("LAlt") : !GetKeyState("LControl")) {
-                    WinActivate("ahk_id" MainWindow.windowsArray[MainWindow.outline.tabCounter].windowID)
-                }
-            } catch NoWindowsError {
-                MainWindow := ""
-            }
+            SetTimer(() => checkModifierAndClose(), -10)
         } else {
             if (MainWindow.windowsArray.Length > 0) {
                 if (PreviewsWindow) {
@@ -119,6 +127,8 @@ altTab() {
                 MainWindow.outline.move(true)
             }
         }
+    } catch NoWindowsError {
+        MainWindow := ""
     } catch Error as err {
         showErrorTooltip(err)
     }
@@ -130,20 +140,10 @@ altShiftTab() {
 
     try {
         If (!MainWindow) {
-            try {
-                ; The user can be very quick to release the "Alt" key, triggering the "LAlt Up" hotkey and interrupting the normal creation of the App Switcher windows.
-                ;The solution is to suspend all hotkeys until the App Switcher windows have been created, check whether "LAlt" is still held down and then act accordingly.
 
-                Suspend(true)
-                MainWindow := Main(1000) ; "1000" just so that it will start at the end of the list
-                Suspend(false)
+            MainWindow := Main(1000) ; "1000" just so that it will start at the end of the list
 
-                if (ThemeValueVariables["Modifier"] = "alt" ? !GetKeyState("LAlt") : !GetKeyState("LControl")) {
-                    WinActivate("ahk_id" MainWindow.windowsArray[MainWindow.outline.tabCounter].windowID)
-                }
-            } catch NoWindowsError {
-                MainWindow := ""
-            }
+            SetTimer(() => checkModifierAndClose(), -10)
         } else {
             if (MainWindow.windowsArray.Length > 0) {
                 if (PreviewsWindow) {
@@ -154,6 +154,8 @@ altShiftTab() {
                 MainWindow.outline.move(false)
             }
         }
+    } catch NoWindowsError {
+        MainWindow := ""
     } catch Error as err {
         showErrorTooltip(err)
     }
@@ -164,17 +166,15 @@ altTilde() {
     global PreviewsWindow
 
     try {
-        If !MainWindow AND !PreviewsWindow {
+        If (!MainWindow AND !PreviewsWindow) {
             Window.AlternateWindows()
-        } else if MainWindow AND !PreviewsWindow {
-            try {
-                PreviewsWindow := PreviewsMain(MainWindow, MainWindow.outline.window, TaskbarLeft, TaskbarRight)
-            } catch NoWindowsError {
-                PreviewsWindow := ""
-            }
-        } else if MainWindow AND PreviewsWindow {
+        } else if (MainWindow AND !PreviewsWindow) {
+            PreviewsWindow := PreviewsMain(MainWindow, MainWindow.outline.window, TaskbarLeft, TaskbarRight)
+        } else if (MainWindow AND PreviewsWindow) {
             PreviewsWindow.outline.draw(true)
         }
+    } catch NoWindowsError {
+        MainWindow := ""
     } catch Error as err {
         showErrorTooltip(err)
     }
@@ -185,7 +185,7 @@ altShiftTilde() {
     global PreviewsWindow
 
     try {
-        if MainWindow AND PreviewsWindow {
+        if (MainWindow AND PreviewsWindow) {
             PreviewsWindow.outline.draw(false)
         }
     } catch Error as err {
@@ -198,27 +198,19 @@ altUp() {
     global PreviewsWindow
 
     try {
-        If PreviewsWindow
-        {
-            try
-            {
-                WinActivate("ahk_id" PreviewsWindow.outline.getWindow().windowID)
+        If (PreviewsWindow) {
+            WinActivate("ahk_id" PreviewsWindow.outline.getWindow().windowID)
 
-                MainWindow.__Delete()
-                MainWindow := ""
-                PreviewsWindow := ""
-            }
+            MainWindow.__Delete()
+            MainWindow := ""
+            PreviewsWindow := ""
         }
-        Else
-        {
-            try
-            {
-                WinActivate("ahk_id" MainWindow.outline.window.windowID)
+        Else if (MainWindow) {
+            WinActivate("ahk_id" MainWindow.outline.window.windowID)
 
-                MainWindow.__Delete()
-                MainWindow := ""
-                PreviewsWindow := ""
-            }
+            MainWindow.__Delete()
+            MainWindow := ""
+            PreviewsWindow := ""
         }
     } catch Error as err {
         showErrorTooltip(err)
@@ -231,8 +223,7 @@ altEscape() {
     global isPreviewsWindowOpen
 
     try {
-        If MainWindow AND !PreviewsWindow
-        {
+        If (MainWindow AND !PreviewsWindow) {
             tempTabCounter := MainWindow.outline.tabCounter
 
             for i in MainWindow.outline.window.windowSubWindows
@@ -243,15 +234,8 @@ altEscape() {
             }
 
             MainWindow.__Delete()
-
-            try {
-                MainWindow := Main(tempTabCounter)
-            } catch NoWindowsError {
-                MainWindow := ""
-            }
-        }
-        Else if MainWindow AND PreviewsWindow
-        {
+            MainWindow := Main(tempTabCounter)
+        } Else if (MainWindow AND PreviewsWindow) {
             isPreviewsWindowOpen := true
             tempTabCounter := MainWindow.outline.tabCounter
             tempPreviewCounter := PreviewsWindow.outline.previewCounter
@@ -260,18 +244,9 @@ altEscape() {
             WinClose("ahk_id" PreviewsWindow.outline.getWindow().windowID)
 
             MainWindow.__Delete()
+            MainWindow := Main(tempTabCounter)
 
-            try {
-                MainWindow := Main(tempTabCounter)
-            } catch NoWindowsError {
-                MainWindow := ""
-            }
-
-            try {
-                PreviewsWindow := PreviewsMain(MainWindow, MainWindow.outline.window, TaskbarLeft, TaskbarRight, tempPreviewCounter)
-            } catch NoWindowsError {
-                PreviewsWindow := ""
-            }
+            PreviewsWindow := PreviewsMain(MainWindow, MainWindow.outline.window, TaskbarLeft, TaskbarRight, tempPreviewCounter)
 
             isPreviewsWindowOpen := false
         }
@@ -279,6 +254,8 @@ altEscape() {
         if (ThemeValueVariables["Modifier"] = "alt" ? !GetKeyState("LAlt") : !GetKeyState("LControl")) {
             WinActivate("ahk_id" MainWindow.windowsArray[MainWindow.outline.tabCounter].windowID)
         }
+    } catch NoWindowsError {
+        MainWindow := ""
     } catch Error as err {
         showErrorTooltip(err)
     }
