@@ -360,7 +360,7 @@ initializeMenus() {
     About(*)
     {
         AboutGui := Gui("+ToolWindow", "About",)
-        AboutGui.Add("Text", "x30 y10", "Version 7.1.5")
+        AboutGui.Add("Text", "x30 y10", "Version 7.2.0")
         AboutGui.Add("Text", "x10 y+m", "Óscar Maganto Torres")
         AboutGui.Add("Button", "x36 y+m", "Github").OnEvent("Click", OpenGithub)
         AboutGui.Show()
