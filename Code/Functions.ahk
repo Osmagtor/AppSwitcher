@@ -116,36 +116,32 @@ checkUpdates() {
 initializeMenus() {
     A_TrayMenu.Add("Reload", Restart)
     A_TrayMenu.Add() ; separator
-    A_TrayMenu.Add("Uninstall", Uninstall)
-    A_TrayMenu.Add() ; separator
     AppearanceSubMenu := Menu()
     AppearanceSubMenu.Add("Light", Light)
     AppearanceSubMenu.Add("Dark", Dark)
     AppearanceSubMenu.Add("System Default", SystemDefault)
     A_TrayMenu.Add("Appearance", AppearanceSubMenu)
+    A_TrayMenu.Add("Set icon size", SetIconSize)
     A_TrayMenu.Add() ; separator
     AltEscSubMenu := Menu()
     AltEscSubMenu.Add("Close selected window", CloseSelectedWindow)
     AltEscSubMenu.Add("Hide App Switcher", HideAppSwitcher)
     A_TrayMenu.Add("Alt + Escape Behaviour", AltEscSubMenu)
     A_TrayMenu.Add() ; separator
-    A_TrayMenu.Add("Set icon size", SetIconSize)
-    A_TrayMenu.Add() ; separator
     ModifierKeySubMenu := Menu()
     ModifierKeySubMenu.Add("Alt", Alt)
     ModifierKeySubMenu.Add("Control", Control)
     A_TrayMenu.Add("Set modifier key", ModifierKeySubMenu)
-    A_TrayMenu.Add() ; separator
     CloseKeySubMenu := Menu()
     CloseKeySubMenu.Add("Esc", Esc)
     CloseKeySubMenu.Add("Q", Q)
     A_TrayMenu.Add("Set close key", CloseKeySubMenu)
-    A_TrayMenu.Add() ; separator
     SameWindowKeySubMenu := Menu()
     SameWindowKeySubMenu.Add("Tilde", Tilde)
     SameWindowKeySubMenu.Add("Esc", Esc2)
-    A_TrayMenu.Add("Set same window key", SameWindowKeySubMenu)
+    A_TrayMenu.Add("Set same app key", SameWindowKeySubMenu)
     A_TrayMenu.Add() ; separator
+    A_TrayMenu.Add("Uninstall", Uninstall)
     A_TrayMenu.Add("About", About)
 
     global ThemeValueVariables := Map()
