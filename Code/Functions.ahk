@@ -405,7 +405,10 @@ FocusLost(wParam, lParam, msg, hwnd) {
     global PreviewsWindow
 
     try {
-        if ((wParam = 6) OR (wParam = 32772))
+
+        ; "16" corresponds to the "WM_CLOSE" message and "1" to the "WM_CREATE" message
+
+        if (wParam = 16 OR wParam = 1)
         {
             if (WinGetProcessPath("ahk_id" lParam) != A_ScriptFullPath) {
                 if (MainWindow) {
