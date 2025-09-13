@@ -58,9 +58,6 @@ StartupComplete := true
 !+SC029:: {
     altShiftTilde()
 }
-!Esc:: {
-    altEscape()
-}
 #HotIf StartupComplete AND ThemeValueVariables["Modifier"] = "control"
 ^Tab:: {
     altTab()
@@ -74,7 +71,22 @@ StartupComplete := true
 ^+SC029:: {
     altShiftTilde()
 }
+
+
+#HotIf StartupComplete AND ThemeValueVariables["Modifier"] = "alt" AND ThemeValueVariables["Close"] = "esc"
+!Esc:: {
+    altEscape()
+}
+#HotIf StartupComplete AND ThemeValueVariables["Modifier"] = "alt" AND ThemeValueVariables["Close"] = "q"
+!q:: {
+    altEscape()
+}
+#HotIf StartupComplete AND ThemeValueVariables["Modifier"] = "control" AND ThemeValueVariables["Close"] = "esc"
 ^Esc:: {
+    altEscape()
+}
+#HotIf StartupComplete AND ThemeValueVariables["Modifier"] = "control" AND ThemeValueVariables["Close"] = "q"
+^q:: {
     altEscape()
 }
 
@@ -82,7 +94,7 @@ StartupComplete := true
 LAlt Up:: {
     altUp()
 }
-#HotIf (MainWindow AND MainWindow.windowsArray.Length > 0) AND StartupComplete AND ThemeValueVariables["Modifier"] = "control"
+#HotIf (MainWindow) AND StartupComplete AND ThemeValueVariables["Modifier"] = "control"
 LControl Up:: {
     altUp()
 }

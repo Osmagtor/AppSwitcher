@@ -136,6 +136,11 @@ initializeMenus() {
     ModifierKeySubMenu.Add("Control", Control)
     A_TrayMenu.Add("Set modifier key", ModifierKeySubMenu)
     A_TrayMenu.Add() ; separator
+    CloseKeySubMenu := Menu()
+    CloseKeySubMenu.Add("Esc", Esc)
+    CloseKeySubMenu.Add("Q", Q)
+    A_TrayMenu.Add("Set close key", CloseKeySubMenu)
+    A_TrayMenu.Add() ; separator
     A_TrayMenu.Add("About", About)
 
     global ThemeValueVariables := Map()
@@ -214,20 +219,41 @@ initializeMenus() {
         If (ModifierValue = "control")
         {
             ThemeValueVariables["Modifier"] := "control"
-            ModifierKeySubMenu.UnCheck("Alt")
+            ModifierKeySubMenu.Uncheck("Alt")
             ModifierKeySubMenu.Check("Control")
         }
         Else if (ModifierValue = "alt")
         {
             ThemeValueVariables["Modifier"] := "alt"
-            ModifierKeySubMenu.UnCheck("Control")
+            ModifierKeySubMenu.Uncheck("Control")
             ModifierKeySubMenu.Check("Alt")
         }
     } catch {
         ThemeValueVariables["Modifier"] := "control"
-        ModifierKeySubMenu.UnCheck("Control")
+        ModifierKeySubMenu.Uncheck("Control")
         ModifierKeySubMenu.Check("Alt")
         IniWrite("alt", "settings.ini", "behaviour", "modifier")
+    }
+
+    try {
+        CloseKey := IniRead("settings.ini", "behaviour", "close")
+        If (CloseKey = "esc")
+        {
+            ThemeValueVariables["Close"] := "esc"
+            CloseKeySubMenu.Uncheck("Q")
+            CloseKeySubMenu.Check("Esc")
+        }
+        Else if (CloseKey = "q")
+        {
+            ThemeValueVariables["Close"] := "q"
+            CloseKeySubMenu.Uncheck("Esc")
+            CloseKeySubMenu.Check("Q")
+        }
+    } catch {
+        ThemeValueVariables["Close"] := "esc"
+        CloseKeySubMenu.Uncheck("Q")
+        CloseKeySubMenu.Check("Esc")
+        IniWrite("esc", "settings.ini", "behaviour", "close")
     }
 
     Return
@@ -300,6 +326,28 @@ initializeMenus() {
         IniWrite("alt", "settings.ini", "behaviour", "modifier")
 
         ThemeValueVariables["Modifier"] := "alt"
+        Return
+    }
+
+    Esc(*)
+    {
+        CloseKeySubMenu.UnCheck("Q")
+        CloseKeySubMenu.Check("Esc")
+
+        IniWrite("esc", "settings.ini", "behaviour", "close")
+
+        ThemeValueVariables["Close"] := "esc"
+        Return
+    }
+
+    Q(*)
+    {
+        CloseKeySubMenu.UnCheck("Esc")
+        CloseKeySubMenu.Check("Q")
+
+        IniWrite("q", "settings.ini", "behaviour", "close")
+
+        ThemeValueVariables["Close"] := "q"
         Return
     }
 
