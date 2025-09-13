@@ -44,7 +44,7 @@ class Window {
         } else {
             throw NoWindowsError()
         }
-    }   
+    }
 
     /**
      * Method to render a drop shadow in the window of a given handle
@@ -141,12 +141,18 @@ class Window {
                             found ? validWindows.Length : validWindows.Length + 1
                         )
 
-                        createdWindow.windowSubWindows.Push(createdWindow)
+                        ; Minimized windows have an approximate size of 160×31 pixels
+                        ; Thus, this check essentially serves as a general filter to weed out windows that are too small to be considered valid
 
-                        if (found) {
-                            found.windowSubWindows.Push(createdWindow)
-                        } else {
-                            validWindows.Push(createdWindow)
+                        if (createdWindow.w > 10 AND createdWindow.h > 10) {
+
+                            createdWindow.windowSubWindows.Push(createdWindow)
+
+                            if (found) {
+                                found.windowSubWindows.Push(createdWindow)
+                            } else {
+                                validWindows.Push(createdWindow)
+                            }
                         }
                     } catch NoWindowsError {
                         ; Nothing. Just catching an error specifically thrown to prevent any rogue windows
