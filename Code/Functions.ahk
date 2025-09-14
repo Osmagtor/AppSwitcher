@@ -81,7 +81,7 @@ checkUpdates() {
         if (SubStr(version, 1, 1) = "v") {
             version := SubStr(version, 2)
 
-            if (VerCompare(version, "7.1.5") > 0) {
+            if (VerCompare(version, "7.2.0") > 0) {
                 updateAvailable := true
             }
         }
