@@ -13,6 +13,7 @@ class Icon {
     x := ""
     y := ""
     static uwpIconSizes := Array(96, 80, 72, 64, 60, 48)
+    id := ""
 
     /**
      * Constructor
@@ -26,6 +27,8 @@ class Icon {
         this.filepath := uwp OR InStr(WinGetProcessPath("ahk_id" id), "C:\Program Files\WindowsApps\") ?
             this.localGetUWPIcon(title, id) :
             WinGetProcessPath("ahk_id" id)
+
+        this.id := id
 
         this.parameters := position = 1 ?
             "x" . Icon.padding .
@@ -55,6 +58,35 @@ class Icon {
         ControlGetPos(&xPos, &yPos, , , this.ctrl, "ahk_id " gui.Hwnd)
         this.x := xPos
         this.y := yPos
+
+        ; Adding a click event to the icon
+
+        this.ctrl.OnEvent("Click", (*) => this.Clicked())
+    }
+
+    /**
+     * Method that is called when the icon is clicked
+     */
+    Clicked() {
+        try {
+
+            global MainWindow
+            global PreviewsWindow
+
+            WinActivate("ahk_id" this.id)
+
+            if (MainWindow) {
+                MainWindow.__Delete()
+                MainWindow := ""
+            }
+
+            if (PreviewsWindow) {
+                PreviewsWindow.__Delete()
+                PreviewsWindow := ""
+            }
+        } catch Error as err {
+            showErrorTooltip("Could not activate window: " . err.Message)
+        }
     }
 
     /**
