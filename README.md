@@ -1,7 +1,15 @@
 <div align="center">
-<picture>
-    <img src="./Icon.ico" width="128px">
-</picture>
+    <picture>
+        <img src="./Icon.ico" width="128px">
+    </picture>
+</div>
+<br>
+<div align="center">
+    <picture>
+      <a href="https://ko-fi.com/P5P71I1ITU">
+        <img src="https://ko-fi.com/img/githubbutton_sm.svg">
+      </a>
+    </picture>
 </div>
 <h1 align="center">
 App Switcher
